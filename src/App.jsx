@@ -20,7 +20,7 @@ import GetTicket from './pages/GetTicket'
 
 function App() {
   return (
-    <Router>
+    <Router basename="/chardham">
       <Layout>
         <Routes>
           <Route path="/" element={<Home />} />
@@ -30,32 +30,26 @@ function App() {
           <Route path="/confirm-booking" element={<ConfiirmBookingForm />} />
           <Route path="/booking-success" element={<BookingSucess />} />
           <Route path="/boding-pass" element={<BoadingPass />} />
-
           <Route path="/get-ticket" element={<GetTicket />} />
           <Route path="/admin-login" element={<Login />} />
-          {/* Dashboard route with nested routes */}
           <Route
             path="/dashboard/*"
             element={
-          
               <ProtectedRoute>
-              <DashboardLayout />
-            </ProtectedRoute>
-           
+                <DashboardLayout />
+              </ProtectedRoute>
             }
           >
             <Route index element={<Dashboard />} />
             <Route path="add-booking" element={<AddBooking />} />
-            <Route path="all-slots" element={<AllSlots/>} />
+            <Route path="all-slots" element={<AllSlots />} />
             <Route path="custumer-booking" element={<BookedHelecopter />} />
           </Route>
-
-
-
         </Routes>
       </Layout>
     </Router>
-  )
+  );
 }
+
 
 export default App
