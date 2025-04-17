@@ -1,0 +1,38 @@
+{
+    "month": "March",
+    "year": 2025,
+    "days": [
+      { "date": "2025-03-01", "availableSeats": 0, "tripType": "multi" },
+      { "date": "2025-03-02", "availableSeats": 1, "tripType": "multi" },
+      { "date": "2025-03-03", "availableSeats": 1, "tripType": "multi" },
+      { "date": "2025-03-04", "availableSeats": 0, "tripType": "multi" },
+      { "date": "2025-03-05", "availableSeats": 1, "tripType": "one-day" },
+      { "date": "2025-03-06", "availableSeats": 1, "tripType": "one-day" },
+      { "date": "2025-03-07", "availableSeats": 0, "tripType": "one-day" },
+      { "date": "2025-03-08", "availableSeats": 1, "tripType": "one-day" },
+      { "date": "2025-03-09", "availableSeats": 0, "tripType": "multi" },
+      { "date": "2025-03-10", "availableSeats": 1, "tripType": "multi" },
+      { "date": "2025-03-11", "availableSeats": 0, "tripType": "multi" },
+      { "date": "2025-03-12", "availableSeats": 0, "tripType": "multi" },
+      { "date": "2025-03-13", "availableSeats": 0, "tripType": "one-day" },
+      { "date": "2025-03-14", "availableSeats": 1, "tripType": "one-day" },
+      { "date": "2025-03-15", "availableSeats": 1, "tripType": "one-day" },
+      { "date": "2025-03-16", "availableSeats": 0, "tripType": "multi" },
+      { "date": "2025-03-17", "availableSeats": 1, "tripType": "multi" },
+      { "date": "2025-03-18", "availableSeats": 1, "tripType": "one-day" },
+      { "date": "2025-03-19", "availableSeats": 1, "tripType": "one-day" },
+      { "date": "2025-03-20", "availableSeats": 1, "tripType": "multi" },
+      { "date": "2025-03-21", "availableSeats": 1, "tripType": "multi" },
+      { "date": "2025-03-22", "availableSeats": 1, "tripType": "multi" },
+      { "date": "2025-03-23", "availableSeats": 1, "tripType": "one-day" },
+      { "date": "2025-03-24", "availableSeats": 1, "tripType": "one-day" },
+      { "date": "2025-03-25", "availableSeats": 1, "tripType": "one-day" },
+      { "date": "2025-03-26", "availableSeats": 1, "tripType": "multi" },
+      { "date": "2025-03-27", "availableSeats": 1, "tripType": "multi" },
+      { "date": "2025-03-28", "availableSeats": 1, "tripType": "one-day" },
+      { "date": "2025-03-29", "availableSeats": 1, "tripType": "one-day" },
+      { "date": "2025-03-30", "availableSeats": 0, "tripType": "one-day" },
+      { "date": "2025-03-31", "availableSeats": 1, "tripType": "one-day" }
+    ]
+  }
+  
