@@ -15,7 +15,7 @@ const TravelCard = ({ days, nights, price, destinations, onClick, sameDay, extra
       {/* Image Section */}
       <div className="flex flex-col md:flex-row gap-4">
         <img 
-          src="/images.png" 
+          src="./images.png" 
           alt="Char Dham Temples" 
           className="w-20 md:w-28 h-20 md:h-28 rounded-xl object-cover border-4 border-white shadow-md transform hover:scale-105 transition-transform duration-300"
         />

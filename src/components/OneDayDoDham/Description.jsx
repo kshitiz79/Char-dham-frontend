@@ -3,44 +3,53 @@ import React from 'react';
 const Description = () => {
   const itinerary = [
     {
-      time: "09:30 AM",
-      title: "Departure from Dehradun",
+      time: "05:00 AM",
+      title: "Report at Dehradun Airport",
       activities: [
-        "Report at <span class='font-bold text-orange-600'>Sahastradhara Helipad, Dehradun</span>.",
-        "Board <span class='font-bold text-orange-600'>Augusta 109 Power helicopter</span> for departure."
+        "Report at <span class='font-bold text-orange-600'>Dehradun Airport</span> with same-day return yatri."
       ]
     },
     {
-      time: "10:00 AM - 01:00 PM",
+      time: "06:00 AM - 06:35 AM",
+      title: "Helicopter to Sersi/Phata/Guptkashi",
+      activities: [
+        "<span class='font-bold text-orange-600'>06:00 AM</span>: Helicopter departs for <span class='font-bold text-orange-600'>Sersi/Phata/Guptkashi</span> with same-day Do Dham yatri.",
+        "<span class='font-bold text-orange-600'>06:35 AM</span>: Arrival at <span class='font-bold text-orange-600'>Sersi/Phata/Guptkashi Helipad</span>."
+      ]
+    },
+    {
+      time: "06:35 AM - 08:35 AM",
       title: "Kedarnath Darshan",
       activities: [
-        "<span class='font-bold text-orange-600'>10:00 AM</span>: Helicopter departs for <span class='font-bold text-orange-600'>Kedarnath</span>.",
-        "<span class='font-bold text-orange-600'>10:45 AM</span>: Arrive at <span class='font-bold text-orange-600'>Sersi Helipad</span>, followed by shuttle service to <span class='font-bold text-orange-600'>Kedarnath Temple</span>.",
-        "<span class='font-bold text-orange-600'>VIP Darshan</span> at Kedarnath Ji (approx. 2 hours).",
-        "<span class='font-bold text-orange-600'>01:00 PM</span>: Return to Sersi Helipad for next leg."
+        "Shuttle service to <span class='font-bold text-orange-600'>Kedarnath Temple</span> for <span class='font-bold text-orange-600'>VIP Darshan</span> (approx. 2 hours)."
       ]
     },
     {
-      time: "01:00 PM - 04:30 PM",
+      time: "09:20 AM - 09:50 AM",
+      title: "Helicopter to Badrinath",
+      activities: [
+        "<span class='font-bold text-orange-600'>09:20 AM</span>: Helicopter departs from <span class='font-bold text-orange-600'>Sersi/Phata/Guptkashi</span> to <span class='font-bold text-orange-600'>Badrinath</span> with same-day package yatris.",
+        "<span class='font-bold text-orange-600'>09:50 AM</span>: Arrival at <span class='font-bold text-orange-600'>Badrinath Helipad</span> with same-day package yatris."
+      ]
+    },
+    {
+      time: "09:50 AM - 12:00 PM",
       title: "Badrinath Darshan",
       activities: [
-        "<span class='font-bold text-orange-600'>01:00 PM</span>: Helicopter departs from Sersi to <span class='font-bold text-orange-600'>Badrinath</span>.",
-        "<span class='font-bold text-orange-600'>01:45 PM</span>: Arrival at <span class='font-bold text-orange-600'>Badrinath Helipad</span>.",
-        "Transfer to <span class='font-bold text-orange-600'>Badrinath Temple</span> for <span class='font-bold text-orange-600'>VIP Darshan</span> (approx. 1.5 hours).",
-        "Visit <span class='font-bold text-orange-600'>Mana Village</span> – India’s last village near the Indo-China border (time permitting)."
+        "Transfer to <span class='font-bold text-orange-600'>Badrinath Temple</span> for <span class='font-bold text-orange-600'>VIP Darshan</span> (approx. 2 hours)."
       ]
     },
     {
-      time: "04:30 PM - 05:30 PM",
+      time: "12:00 PM - 12:55 PM",
       title: "Return to Dehradun",
       activities: [
-        "<span class='font-bold text-orange-600'>04:30 PM</span>: Helicopter departs from Badrinath to <span class='font-bold text-orange-600'>Dehradun</span>.",
-        "<span class='font-bold text-orange-600'>05:30 PM</span>: Arrival at <span class='font-bold text-orange-600'>Sahastradhara Helipad, Dehradun</span>.",
+        "<span class='font-bold text-orange-600'>12:00 PM</span>: Helicopter departs from <span class='font-bold text-orange-600'>Badrinath</span> to <span class='font-bold text-orange-600'>Dehradun</span> with same-day package yatris.",
+        "<span class='font-bold text-orange-600'>12:55 PM</span>: Arrival at <span class='font-bold text-orange-600'>Dehradun Airport</span> with same-day package yatris.",
+        "Drop-off at <span class='font-bold text-orange-600'>Dehradun Airport/Railway Station</span>.",
         "Tour Concludes."
       ]
     }
   ];
-
   return (
     <div className="container mx-auto px-4 py-12 font-sans">
       <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-3xl p-8 shadow-xl relative overflow-hidden">
@@ -89,7 +98,8 @@ const Description = () => {
                 style={{ animationDelay: `${index * 100}ms` }}
               >
                 <h4 className="text-2xl font-semibold text-gray-800 mb-4">
-                  <span className="text-orange-600">{item.time}</span>: {item.title}
+                  <span className="text-orange-600">{item.time}</span> <br/>
+                  <span className='text-xl'>{item.title}</span>
                 </h4>
                 <ul className="space-y-3">
                   {item.activities.map((activity, i) => (

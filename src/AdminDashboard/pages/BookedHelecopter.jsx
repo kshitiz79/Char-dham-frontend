@@ -19,7 +19,8 @@ const BookedHelicopter = () => {
     setError(null);
     try {
       const response = await fetch(`${apiUrl}/customers?date=${selectedDate}&tripType=${tripType}`, {
-        headers: { 'Accept': 'application/json' }
+        headers: { 'Accept': 'application/json' },
+        mode: 'cors'
       });
       if (!response.ok) {
         throw new Error(`Failed to fetch bookings: ${response.statusText}`);
@@ -54,12 +55,13 @@ const BookedHelicopter = () => {
     try {
       const response = await fetch(`${apiUrl}/customers/${customerId}`, {
         method: "DELETE",
-        headers: { 'Accept': 'application/json' }
+        headers: { 'Accept': 'application/json' },
+        mode: 'cors'
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || "Unknown error");
+        throw new Error(errorData.message || `Failed to delete booking: ${response.statusText}`);
       }
 
       setBookings(prev => prev.map(booking => ({
@@ -71,6 +73,13 @@ const BookedHelicopter = () => {
       console.error("Error deleting booking:", error);
       setError(`Could not delete booking: ${error.message}`);
     }
+  };
+
+  // Determine if the file is an image
+  const isImage = (filePath) => {
+    if (!filePath) return false;
+    const extension = filePath.split('.').pop().toLowerCase();
+    return ['jpg', 'jpeg', 'png'].includes(extension);
   };
 
   return (
@@ -209,6 +218,27 @@ const BookedHelicopter = () => {
                                   <p className="text-indigo-700 font-bold">
                                     Booking ID: {passenger.booking_id || "N/A"}
                                   </p>
+                                  {passenger.id_document_path && (
+                                    <p className="text-gray-600">
+                                      <span className="text-indigo-600">ID Document:</span>{' '}
+                                      {isImage(passenger.id_document_path) ? (
+                                        <img
+                                          src={`${apiUrl}/${passenger.id_document_path}`}
+                                          alt="ID Document"
+                                          className="mt-2 max-w-[100px] h-auto rounded"
+                                        />
+                                      ) : (
+                                        <a
+                                          href={`${apiUrl}/${passenger.id_document_path}`}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="text-blue-600 hover:underline"
+                                        >
+                                          View PDF
+                                        </a>
+                                      )}
+                                    </p>
+                                  )}
                                 </div>
 
                                 {/* DELETE BUTTON: using customer.id (primary key) */}

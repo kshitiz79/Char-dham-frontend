@@ -24,8 +24,8 @@ function App() {
       <Layout>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/char-dham" element={<CharDham />} />
-          <Route path="/do-dham" element={<DooDham />} />
+          {/* <Route path="/char-dham" element={<CharDham />} /> */}
+          {/* <Route path="/do-dham" element={<DooDham />} /> */}
           <Route path="/do-dham-oneday" element={<DooDhamOneDay />} />
           <Route path="/confirm-booking" element={<ConfiirmBookingForm />} />
           <Route path="/booking-success" element={<BookingSucess />} />

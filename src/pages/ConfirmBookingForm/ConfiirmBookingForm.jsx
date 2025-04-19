@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Summery } from './Summery';
+import Header from './Header';
+import TravelDetails from './TravelDetails';
+import PassengerList from './PassengerList';
+import SubmitButton from './SubmitButton';
+import MessageDisplay from './MessageDisplay';
 
 const ConfirmBookingForm = () => {
   const { state } = useLocation();
@@ -9,18 +14,21 @@ const ConfirmBookingForm = () => {
   const passengers = state?.passengers || [];
   const travelDate = state?.travelDate || null;
   const tripType = state?.tripType || 'multi-day';
-
-  // Define total cost based on tripType
-  const totalCost = tripType === 'one-day' ? 1100000 : tripType === 'char-dham' ? 1800000 : 1500000; // ₹11,00,000 for one-day, ₹15,00,000 for multi-day, ₹18,00,000 for char-dham
+  const totalCost = tripType === 'one-day'
+    ? 1100000
+    : tripType === 'char-dham'
+      ? 1800000
+      : 1500000;
 
   const [formData, setFormData] = useState(
-    passengers.map((p) => ({
+    passengers.map(p => ({
       name: p.name,
       weight: p.weight,
       phone: '',
       email: '',
       age: '',
       idType: '',
+      idDocument: null,
     }))
   );
   const [message, setMessage] = useState('');
@@ -29,263 +37,161 @@ const ConfirmBookingForm = () => {
   const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
   const handleInputChange = (index, field, value) => {
-    setFormData((prev) => {
+    setFormData(prev => {
       const copy = [...prev];
       copy[index] = { ...copy[index], [field]: value };
       return copy;
     });
   };
 
-  const handleConfirm = async (e) => {
-    e.preventDefault();
-    setMessage('');
-    setLoading(true);
+  const handleFileChange = (index, file) => {
+    setFormData(prev => {
+      const copy = [...prev];
+      copy[index] = { ...copy[index], idDocument: file };
+      return copy;
+    });
+  };
 
-    // Validate form data
-    for (const passenger of formData) {
-      if (!passenger.phone || !passenger.email || !passenger.age || !passenger.idType) {
-        setMessage('Please fill in all required fields for all passengers.');
-        setLoading(false);
-        return;
+  // Dynamically load Razorpay SDK
+  const loadRazorpayScript = () => new Promise(resolve => {
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+
+  const validateForm = () => {
+    for (const p of formData) {
+      if (!p.phone || !p.email || !p.age || !p.idType || !p.idDocument) {
+        setMessage('Please fill in all required fields and upload ID for each passenger.');
+        return false;
       }
     }
+    return true;
+  };
 
-    const payload = {
-      passengers: formData,
-      bookingDate: travelDate ? travelDate.toISOString().split('T')[0] : null,
-      tripType,
-      totalCost,
-    };
+  const submitBooking = async () => {
+    const payload = new FormData();
+    payload.append('bookingDate', travelDate ? travelDate.toISOString().split('T')[0] : '');
+    payload.append('tripType', tripType);
+    payload.append('totalCost', totalCost);
+    formData.forEach((p, i) => {
+      payload.append(`passengers[${i}][name]`, p.name);
+      payload.append(`passengers[${i}][weight]`, p.weight);
+      payload.append(`passengers[${i}][phone]`, p.phone);
+      payload.append(`passengers[${i}][email]`, p.email);
+      payload.append(`passengers[${i}][age]`, p.age);
+      payload.append(`passengers[${i}][idType]`, p.idType);
+      if (p.idDocument) payload.append(`passengers[${i}][idDocument]`, p.idDocument);
+    });
 
     try {
-      const response = await fetch(`${apiUrl}/customers`, {
+      const resp = await fetch(`${apiUrl}/customers`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: JSON.stringify(payload),
+        headers: { Accept: 'application/json' },
+        body: payload,
       });
 
-      let responseBody;
-      try {
-        responseBody = await response.json();
-      } catch (jsonErr) {
-        throw new Error(`Invalid JSON response: ${await response.text()}`);
+      if (!resp.ok) {
+        const errText = await resp.text();
+        throw new Error(errText || `Booking failed (HTTP ${resp.status})`);
       }
 
-      // Log the response for debugging
-      console.log('POST /customers response:', { status: response.status, body: responseBody });
-
-      if (!response.ok) {
-        const errorMsg = responseBody.message || `Booking failed (HTTP ${response.status})`;
-        throw new Error(errorMsg);
+      const contentType = resp.headers.get('content-type') || '';
+      if (!contentType.includes('application/json')) {
+        const raw = await resp.text();
+        throw new Error('Expected JSON but got: ' + raw);
       }
 
-      // Check response structure
-      if (!responseBody.status || !responseBody.data) {
-        throw new Error('Invalid response structure: Missing status or data');
+      const data = await resp.json();
+      if (data.status !== 'success' || !data.data) {
+        throw new Error(data.message || 'Unexpected server response');
       }
 
-      if (responseBody.status !== 'success') {
-        throw new Error(`Booking failed: ${responseBody.message || 'Invalid response from server'}`);
-      }
+      const { pnr, bookings, email_sent, whatsapp_sent } = data.data;
+      let msg = `Booking successful! PNR: ${pnr}. `;
+      msg += email_sent ? 'Email sent. ' : 'Email failed. ';
+      msg += whatsapp_sent ? 'WhatsApp sent.' : 'WhatsApp failed.';
+      setMessage(msg);
+      navigate('/booking-success', { state: { formData, travelDate, tripType, pnr, bookings, email_sent, whatsapp_sent } });
 
-      const { pnr, bookings, email_sent, whatsapp_sent, total_cost } = responseBody.data;
-      if (!pnr || !bookings) {
-        throw new Error('Invalid response data: Missing pnr or bookings');
-      }
-
-      // Construct success message based on notification status
-      let successMessage = `Booking successful! Your PNR is ${pnr}. `;
-      if (email_sent) {
-        successMessage += `A confirmation email has been sent to your provided email address(es). `;
-      } else {
-        successMessage += `Email confirmation could not be sent. Please contact support. `;
-      }
-      if (whatsapp_sent) {
-        successMessage += `A WhatsApp confirmation has been sent to your provided phone number(s).`;
-      } else {
-        successMessage += `WhatsApp confirmation could not be sent. Please verify your phone number(s).`;
-      }
-
-      setMessage(successMessage);
-      navigate('/booking-success', {
-        state: { formData, travelDate, tripType, pnr, bookings, total_cost, email_sent, whatsapp_sent },
-      });
     } catch (err) {
-      console.error('Fetch error:', err);
+      console.error(err);
       setMessage(`Error: ${err.message}`);
     } finally {
       setLoading(false);
     }
   };
 
-  const idOptions = [
-    { value: '', label: 'Select ID Type' },
-    { value: 'aadhar', label: 'Aadhar Card' },
-    { value: 'pan', label: 'PAN Card' },
-    { value: 'passport', label: 'Passport' },
-    { value: 'voterid', label: 'Voter ID' },
-  ];
+  const handlePayment = async e => {
+    e?.preventDefault();
+    setMessage('');
+    if (!validateForm()) return;
+    setLoading(true);
+
+    try {
+      const orderRes = await fetch(`${apiUrl}/create-order`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount: totalCost }),
+      });
+
+      if (!orderRes.ok) {
+        const errText = await orderRes.text();
+        throw new Error(errText || `Order creation failed (HTTP ${orderRes.status})`);
+      }
+
+      const contentType = orderRes.headers.get('content-type') || '';
+      if (!contentType.includes('application/json')) {
+        const raw = await orderRes.text();
+        throw new Error('Expected JSON but got: ' + raw);
+      }
+
+      const orderData = await orderRes.json();
+      const loaded = await loadRazorpayScript();
+      if (!loaded) throw new Error('Failed to load payment SDK');
+
+      const options = {
+        key: orderData.key,
+        amount: orderData.amount,
+        currency: orderData.currency,
+        order_id: orderData.orderId,
+        name: 'Lucky Medicals',
+        description: 'Trip Booking',
+        prefill: { email: formData[0].email, contact: formData[0].phone },
+        handler: submitBooking,
+        theme: { color: '#4f46e5' },
+      };
+
+      new window.Razorpay(options).open();
+
+    } catch (err) {
+      console.error(err);
+      setMessage(`Error: ${err.message}`);
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <h2 className="text-4xl font-extrabold text-center mb-10 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent animate-fade-in">
-          Confirm Your Booking
-        </h2>
-
-        {/* Main Container */}
+        <Header />
         <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
-          {/* Left Side: Summery (3/5) */}
           <div className="md:col-span-3">
             <Summery travelDate={travelDate} tripType={tripType} passengers={passengers} />
           </div>
-
-          {/* Right Side: Form (2/5) */}
-          <div className="md:col-span-2 bg-white rounded-xl shadow-lg p-6 h-[54rem]">
-            <form onSubmit={handleConfirm} className="space-y-7">
-              {/* Travel Date */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Travel Date
-                </label>
-                <input
-                  type="text"
-                  value={travelDate ? travelDate.toLocaleDateString() : 'Not Selected'}
-                  disabled
-                  className="w-full p-3 bg-gray-100 text-gray-600 rounded-lg border border-gray-200 shadow-sm cursor-not-allowed"
-                />
-              </div>
-
-              {/* Total Cost Display */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Total Cost
-                </label>
-                <input
-                  type="text"
-                  value={`₹${totalCost.toLocaleString('en-IN')}`}
-                  disabled
-                  className="w-full p-3 bg-gray-100 text-gray-600 rounded-lg border border-gray-200 shadow-sm cursor-not-allowed"
-                />
-              </div>
-
-              {/* Passenger Details */}
-              <div className="space-y-4 h-[40rem] overflow-y-auto pr-2">
-                {formData.map((passenger, index) => (
-                  <div
-                    key={index}
-                    className="bg-gradient-to-r from-gray-50 to-indigo-50 p-4 rounded-lg shadow-md hover:shadow-lg transition-all"
-                  >
-                    <h3 className="text-lg font-semibold text-indigo-700 mb-2">
-                      Passenger {index + 1}
-                    </h3>
-                    <div className="space-y-3">
-                      {/* Name & Weight */}
-                      <div className="grid grid-cols-2 gap-3">
-                        <div>
-                          <label className="block text-xs font-medium text-gray-600">Name</label>
-                          <input
-                            type="text"
-                            value={passenger.name}
-                            disabled
-                            className="w-full p-2 bg-gray-100 text-gray-500 rounded-lg border border-gray-200"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-xs font-medium text-gray-600">Weight (kg)</label>
-                          <input
-                            type="number"
-                            value={passenger.weight}
-                            disabled
-                            className="w-full p-2 bg-gray-100 text-gray-500 rounded-lg border border-gray-200"
-                          />
-                        </div>
-                      </div>
-                      {/* Phone & Email */}
-                      <div className="grid grid-cols-2 gap-3">
-                        <div>
-                          <label className="block text-xs font-medium text-gray-600">Phone</label>
-                          <input
-                            type="tel"
-                            placeholder="e.g. 9876543210"
-                            value={passenger.phone}
-                            onChange={(e) => handleInputChange(index, 'phone', e.target.value)}
-                            required
-                            className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-xs font-medium text-gray-600">Email</label>
-                          <input
-                            type="email"
-                            placeholder="e.g. user@example.com"
-                            value={passenger.email}
-                            onChange={(e) => handleInputChange(index, 'email', e.target.value)}
-                            required
-                            className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
-                          />
-                        </div>
-                      </div>
-                      {/* Age & ID Type */}
-                      <div className="grid grid-cols-2 gap-3">
-                        <div>
-                          <label className="block text-xs font-medium text-gray-600">Age</label>
-                          <input
-                            type="number"
-                            placeholder="30"
-                            min="1"
-                            value={passenger.age}
-                            onChange={(e) => handleInputChange(index, 'age', e.target.value)}
-                            required
-                            className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-xs font-medium text-gray-600">ID Type</label>
-                          <select
-                            value={passenger.idType}
-                            onChange={(e) => handleInputChange(index, 'idType', e.target.value)}
-                            required
-                            className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
-                          >
-                            {idOptions.map((opt) => (
-                              <option key={opt.value} value={opt.value}>
-                                {opt.label}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Submit Button */}
-              <button
-                type="submit"
-                disabled={loading}
-                className={`w-full py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-lg shadow-lg transition-all duration-300
-                  ${loading ? 'opacity-50 cursor-not-allowed' : 'hover:from-indigo-700 hover:to-purple-700 transform hover:scale-105'}`}
-              >
-                {loading ? 'Processing...' : 'Confirm Booking'}
-              </button>
+          <div className="md:col-span-2 bg-blue-50 rounded-xl shadow-lg p-6">
+            <form onSubmit={handlePayment} className="space-y-7">
+              <TravelDetails travelDate={travelDate} totalCost={totalCost} />
+              <PassengerList
+                formData={formData}
+                onInputChange={handleInputChange}
+                onFileChange={handleFileChange}
+              />
+              <SubmitButton loading={loading} />
             </form>
-
-            {/* Message */}
-            {message && (
-              <p
-                className={`mt-4 text-center font-medium ${
-                  message.includes('successful') ? 'text-green-600' : 'text-red-600'
-                } animate-fade-in`}
-              >
-                {message}
-              </p>
-            )}
+            <MessageDisplay message={message} />
           </div>
         </div>
       </div>

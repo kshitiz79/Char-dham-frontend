@@ -1,11 +1,12 @@
+
 import React from 'react';
-  
+
 const OneBanner = () => {
   const itinerary = [
-    { day: "09:30 AM", description: "Report at Sahastradhara Helipad, Dehradun" },
-    { day: "10:00 AM", description: "Helicopter Departs → Kedarnath → Temple Darshan" },
-    { day: "01:00 PM", description: "Kedarnath → Badrinath (Helicopter) → Temple Darshan → Mana Village" },
-    { day: "04:30 PM", description: "Badrinath → Dehradun (Helicopter) → Tour Concludes" }
+    { day: "05:00 AM", description: "Report at Dehradun Airport " },
+    { day: "06:35 AM", description: "Arrival at Sersi/Phata/Guptkashi Helipad " },
+    { day: "09:50 AM", description: "Arrival at Badrinath with same-day package yatris" },
+    { day: "12:55 PM", description: " Drop-off at Dehradun Airport" },
   ];
 
   return (
@@ -26,7 +27,7 @@ const OneBanner = () => {
               key={index}
               className="bg-white/15 backdrop-blur-lg rounded-xl p-6 w-full md:w-[47%] relative 
                 hover:bg-white/20 hover:shadow-xl 
-                border border-white/20 group "
+                border border-white/20 group"
             >
               <div className="absolute -left-4 -top-4 bg-gradient-to-r from-amber-600 to-orange-600 
                 text-white rounded-full w-14 h-14 flex items-center justify-center text-[0.6rem] font-bold 

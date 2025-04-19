@@ -11,7 +11,7 @@ const Footer = () => {
       <div className="flex flex-col md:flex-row items-center md:justify-between p-4 max-w-screen mx-auto">
         {/* Left Side */}
         <div className="flex flex-col items-center md:items-start mb-4 md:mb-0 lg:px-16">
-          <img src="/logo-04.png" alt="FLY OLA" className="w-40 mb-4" />
+          <img src="./logo-04.png" alt="FLY OLA" className="w-40 mb-4" />
           <div className="text-center md:text-left space-y-2">
             {/* You can add additional left-side text or links here */}
           </div>
