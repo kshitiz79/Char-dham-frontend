@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import bgImage from "./../assets/backgroung.png"; // Ensure this path is correct
 import { FaArrowRight } from "react-icons/fa";
-
+import templeImage from './../../public/images.png';
 const TravelCard = ({ days, nights, price, destinations, onClick, sameDay, extraImage }) => (
   <div 
     className="bg-gradient-to-r from-[#ff7f00] to-[#ff6200] rounded-2xl p-6 shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 cursor-pointer border border-orange-300 relative overflow-hidden group"
@@ -15,7 +15,7 @@ const TravelCard = ({ days, nights, price, destinations, onClick, sameDay, extra
       {/* Image Section */}
       <div className="flex flex-col md:flex-row gap-4">
         <img 
-          src="./images.png" 
+          src={templeImage}
           alt="Char Dham Temples" 
           className="w-20 md:w-28 h-20 md:h-28 rounded-xl object-cover border-4 border-white shadow-md transform hover:scale-105 transition-transform duration-300"
         />
