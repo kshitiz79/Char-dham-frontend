@@ -5,7 +5,7 @@ const TravelDetails = ({ travelDate, totalCost }) => {
   return (
     <>
       <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-2">
+        <label className="block text-sm font-semibold text-gray-700 m">
           Travel Date
         </label>
         <input

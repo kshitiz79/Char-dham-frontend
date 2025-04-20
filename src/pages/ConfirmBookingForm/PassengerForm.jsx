@@ -11,7 +11,7 @@ const PassengerForm = ({ passenger, index, onInputChange, onFileChange }) => {
   ];
 
   return (
-    <div className="bg-gradient-to-r from-orange-50 to-indigo-50 p-4 rounded-lg shadow-md hover:shadow-lg transition-all">
+    <div className="bg-gradient-to-r from-orange-50 to-indigo-50 p-4 rounded-lg shadow-md hover:shadow-lg transition-all h-96">
       <h3 className="text-lg font-semibold text-indigo-700 mb-2">
         Passenger {index + 1}
       </h3>

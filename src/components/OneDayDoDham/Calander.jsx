@@ -119,7 +119,7 @@ const Calendar = ({ onDateSelect, tripType = 'one-day' }) => {
       )}
       <div className="grid grid-cols-7 gap-px bg-gray-50">
         {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
-          <div key={day} className="p-3 text-center font-semibold text-gray-700 bg-gradient-to-b from-gray-50 to-gray-100">
+          <div key={day} className="px-1 py-3 text-center text-xs font-semibold text-gray-700 bg-gradient-to-b from-gray-50 to-gray-100 sm:text-sm">
             {day}
           </div>
         ))}
@@ -132,7 +132,7 @@ const Calendar = ({ onDateSelect, tripType = 'one-day' }) => {
             <div
               key={idx}
               className={`
-                p-4 min-h-[90px] transition-all duration-300 ease-in-out transform hover:scale-105
+                p-1 min-h-[50px] sm:min-h-[70px] md:min-h-[90px] transition-all duration-300 ease-in-out transform hover:scale-105
                 ${isCurrentMonth(date) ? 'text-gray-900' : 'text-gray-400'}
                 ${availabilityColor}
                 ${unavailable ? 'cursor-not-allowed' : 'cursor-pointer hover:shadow-md'}
@@ -142,7 +142,7 @@ const Calendar = ({ onDateSelect, tripType = 'one-day' }) => {
               aria-label={`Date: ${date.toDateString()}, ${unavailable ? 'Unavailable' : 'Available'}`}
             >
               <span className={`
-                w-8 h-8 flex items-center justify-center rounded-full mx-auto font-semibold
+                w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center rounded-full mx-auto text-xs sm:text-sm font-semibold
                 ${isSelected(date) ? 'bg-indigo-600 text-white' : 'text-gray-800'}
                 ${unavailable ? 'opacity-60' : 'hover:bg-indigo-200 transition-colors duration-200'}
               `}>
@@ -157,18 +157,19 @@ const Calendar = ({ onDateSelect, tripType = 'one-day' }) => {
 
   const renderWeekView = () => (
     <div className="border border-gray-200 rounded-2xl shadow-xl bg-white overflow-hidden transform transition-all duration-500">
-      <div className="grid grid-cols-[100px_repeat(7,1fr)] divide-x divide-gray-100 bg-gradient-to-b from-gray-50 to-gray-100">
-        <div className="p-4 font-semibold text-gray-700">Time</div>
+      <div className="grid grid-cols-[50px_repeat(7,1fr)] sm:grid-cols-[80px_repeat(7,1fr)] divide-x divide-gray-100 bg-gradient-to-b from-gray-50 to-gray-100">
+        <div className="px-1 py-2 text-xs font-semibold text-gray-700 sm:p-4 sm:text-sm">Time</div>
         {getWeekDates().map((date, i) => (
-          <div key={i} className="p-4 text-center text-gray-900 font-semibold">
-            {date.toDateString().slice(0, 3)} {date.getDate()}
+          <div key={i} className="px-1 py-2 text-center text-xs text-gray-900 font-semibold sm:p-4 sm:text-sm">
+            <span className="hidden sm:inline">{date.toDateString().slice(0, 3)} </span>
+            {date.getDate()}
           </div>
         ))}
       </div>
       <div className="divide-y divide-gray-100">
         {timeSlots.map((time) => (
-          <div key={time} className="grid grid-cols-[100px_repeat(7,1fr)] divide-x divide-gray-100">
-            <div className="p-4 text-sm text-gray-600 bg-gray-50 font-medium">{time}</div>
+          <div key={time} className="grid grid-cols-[50px_repeat(7,1fr)] sm:grid-cols-[80px_repeat(7,1fr)] divide-x divide-gray-100">
+            <div className="px-1 py-2 text-xs text-gray-600 bg-gray-50 font-medium sm:p-4 sm:text-sm">{time}</div>
             {getWeekDates().map((date, i) => {
               const unavailable = isUnavailable(date);
               const availabilityColor = getAvailabilityColor(date);
@@ -176,7 +177,7 @@ const Calendar = ({ onDateSelect, tripType = 'one-day' }) => {
                 <div
                   key={i}
                   className={`
-                    p-4 transition-all duration-300 transform hover:scale-105 ${availabilityColor}
+                    p-1 sm:p-4 transition-all duration-300 transform hover:scale-105 ${availabilityColor}
                     ${unavailable ? 'cursor-not-allowed opacity-60' : 'cursor-pointer hover:shadow-md'}
                     ${isSelected(date) ? 'ring-2 ring-indigo-500 ring-offset-2 bg-indigo-50' : ''}
                   `}
@@ -192,51 +193,52 @@ const Calendar = ({ onDateSelect, tripType = 'one-day' }) => {
   );
 
   return (
-    <div className="container mx-auto px-6 py-12 max-w-7xl">
-      <h1 className="text-4xl text-center font-extrabold mb-8 bg-gradient-to-r from-indigo-600 to-teal-500 bg-clip-text text-transparent tracking-tight">
+    <div className="container mx-auto px-4 py-8 max-w-xl sm:max-w-3xl lg:max-w-7xl">
+      <h1 className="text-2xl sm:text-3xl md:text-4xl text-center font-extrabold mb-6 sm:mb-8 bg-gradient-to-r from-indigo-600 to-teal-500 bg-clip-text text-transparent tracking-tight">
         Book Your Trip
       </h1>
       {error && (
-        <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded-r-lg text-center">
+        <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-2 mb-4 rounded-r-lg text-center sm:p-4 sm:mb-6">
           {error}
         </div>
       )}
-      <div className="bg-white rounded-3xl shadow-2xl p-8 transform transition-all duration-500 hover:shadow-3xl">
-        <div className="flex justify-between items-center mb-8">
-          <div className="flex gap-4">
+      <div className="bg-white rounded-2xl shadow-xl p-4 transform transition-all duration-500 hover:shadow-2xl sm:p-6 md:p-8">
+        <div className="flex justify-between items-center mb-4 sm:mb-6">
+          <div className="flex gap-2 sm:gap-4">
             <button
-              className="px-5 py-2 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white rounded-xl font-semibold hover:from-indigo-700 hover:to-indigo-800 transition-all duration-300 shadow-lg hover:shadow-xl"
+              className="px-3 py-1 text-xs bg-gradient-to-r from-indigo-600 to-indigo-700 text-white rounded-lg font-semibold hover:from-indigo-700 hover:to-indigo-800 transition-all duration-300 shadow-md hover:shadow-lg sm:px-5 sm:py-2 sm:text-sm"
               onClick={() => setCurrentDate(new Date())}
             >
               Today
             </button>
             <button
-              className="p-3 hover:bg-gray-200 rounded-full transition-all duration-300 hover:shadow-lg"
+              className="p-2 hover:bg-gray-200 rounded-full transition-all duration-300 hover:shadow-md sm:p-3 hover:shadow-lg"
               onClick={() => navigateMonth(-1)}
               aria-label="Previous Month"
             >
-              <svg className="w-7 h-7 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 text-gray-700 sm:w-7 sm:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
               </svg>
             </button>
             <button
-              className="p-3 hover:bg-gray-200 rounded-full transition-all duration-300 hover:shadow-lg"
+              className="p-2 hover:bg-gray-200 rounded-full transition-all duration-300 hover:shadow-md sm:p-3 hover:shadow-lg"
               onClick={() => navigateMonth(1)}
               aria-label="Next Month"
             >
-              <svg className="w-7 h-7 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 text-gray-700 sm:w-7 sm:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
               </svg>
             </button>
           </div>
-          <h2 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-teal-500 bg-clip-text text-transparent">
+          <h2 className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-teal-500 bg-clip-text text-transparent sm:text-2xl md:text-3xl">
             {`${monthNames[currentDate.getMonth()]} ${currentDate.getFullYear()}`}
           </h2>
-          <div className="flex gap-4">
+          <div className="flex gap-2 sm:gap-4">
             <button
               className={`
-                px-5 py-2 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl
+                px-3 py-1 text-xs rounded-lg font-semibold transition-all duration-300 shadow-md hover:shadow-lg
                 ${view === 'month' ? 'bg-gradient-to-r from-indigo-600 to-indigo-700 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}
+                sm:px-5 sm:py-2 sm:text-sm
               `}
               onClick={() => setView('month')}
             >
@@ -244,8 +246,9 @@ const Calendar = ({ onDateSelect, tripType = 'one-day' }) => {
             </button>
             <button
               className={`
-                px-5 py-2 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl
+                px-3 py-1 text-xs rounded-lg font-semibold transition-all duration-300 shadow-md hover:shadow-lg
                 ${view === 'week' ? 'bg-gradient-to-r from-indigo-600 to-indigo-700 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}
+                sm:px-5 sm:py-2 sm:text-sm
               `}
               onClick={() => setView('week')}
             >

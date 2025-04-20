@@ -4,7 +4,7 @@ import PassengerForm from './PassengerForm';
 
 const PassengerList = ({ formData, onInputChange, onFileChange }) => {
   return (
-    <div className="space-y-4 h-[40rem] overflow-y-auto pr-2">
+    <div className="space-y-4  overflow-y-auto pr-2">
       {formData.map((passenger, index) => (
         <PassengerForm
           key={index}

@@ -177,8 +177,8 @@ const ConfirmBookingForm = () => {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <Header />
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
-          <div className="md:col-span-3">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-6 ">
+          <div className="md:col-span-3 h-auto">
             <Summery travelDate={travelDate} tripType={tripType} passengers={passengers} />
           </div>
           <div className="md:col-span-2 bg-blue-50 rounded-xl shadow-lg p-6">

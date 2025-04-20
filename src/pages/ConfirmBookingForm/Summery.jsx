@@ -2,18 +2,23 @@ import React from 'react';
 
 export const Summery = ({ travelDate, tripType, passengers = [] }) => {
   const itinerary = tripType === 'one-day'
-    ? [
-        { label: '09:30 AM', text: 'Report at Sahastradhara Helipad, Dehradun', icon: '🕤' },
-        { label: '10:00 AM', text: 'Helicopter → Kedarnath → Temple Darshan', icon: '🚁' },
-        { label: '01:00 PM', text: 'Kedarnath → Badrinath → Temple Darshan → Mana Village', icon: '🏞️' },
-        { label: '04:30 PM', text: 'Return to Dehradun — Tour Concludes', icon: '🏁' }
-      ]
-    : [
-        { label: 'Day 1', text: 'Arrival → Hotel Check‑in → Evening Briefing', icon: '🏨' },
-        { label: 'Day 2', text: 'Dehradun → Kedarnath (Helicopter) → Temple Darshan', icon: '🚁' },
-        { label: 'Day 3', text: 'Kedarnath → Badrinath (Helicopter) → Temple Darshan → Mana Village', icon: '🏞️' },
-        { label: 'Day 4', text: 'Badrinath → Dehradun (Helicopter) → Departure', icon: '✈️' }
-      ];
+  ? [
+      { label: '05:00 AM', text: 'Report at Dehradun Airport with same-day return yatri.', icon: '🛫' },
+      { label: '06:00 AM', text: 'Helicopter departs for Sersi/Phata/Guptkashi.', icon: '🚁' },
+      { label: '06:35 AM', text: 'Arrival at Sersi/Phata/Guptkashi Helipad.', icon: '📍' },
+      { label: '—', text: 'Shuttle to Kedarnath Temple for VIP Darshan (~2 hrs).', icon: '🛕' },
+      { label: '09:20 AM', text: 'Helicopter departs from Sersi/Phata/Guptkashi to Badrinath.', icon: '🚁' },
+      { label: '09:50 AM', text: 'Arrival at Badrinath. Darshan.', icon: '🙏' },
+      { label: '12:00 PM', text: 'Helicopter departs from Badrinath to Dehradun.', icon: '🚁' },
+      { label: '12:55 PM', text: 'Arrival at Dehradun Airport — Tour Concludes.', icon: '🏁' }
+    ]
+  : [
+      { label: 'Day 1', text: 'Report at Dehradun Airport. Helicopter departs for Badrinath at 06:40 AM.', icon: '🛫' },
+      { label: 'Day 2', text: 'Arrival at Badrinath (07:10 AM). Return helicopter departs for Dehradun at 07:15 AM.', icon: '🚁' },
+      { label: 'Day 3', text: 'Arrival back in Dehradun by 08:10 AM. Helicopter departs again to Sersi/Phata/Guptkashi at 08:40 AM.', icon: '🔁' },
+      { label: 'Day 4', text: 'Arrival at Badrinath (09:50 AM). Final return to Dehradun at 12:00 PM. Drop-off at Airport/Railway Station.', icon: '🏁' }
+    ];
+
 
   // Define the price based on tripType
   const totalCost = tripType === 'one-day' ? 1100000 : 1500000; // ₹11,00,000 for one-day, ₹15,00,000 for multi-day
@@ -80,12 +85,12 @@ export const Summery = ({ travelDate, tripType, passengers = [] }) => {
               {passengers.map((p, i) => (
                 <div
                   key={i}
-                  className="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200"
+                  className="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200 "
                 >
                   <span className="w-8 h-8 flex items-center justify-center bg-indigo-500 text-white rounded-full mr-3">
                     {i + 1}
                   </span>
-                  <div>
+                  <div >
                     <p className="font-medium text-gray-800">{p.name}</p>
                     <p className="text-sm text-gray-600">{p.weight} kg</p>
                   </div>
