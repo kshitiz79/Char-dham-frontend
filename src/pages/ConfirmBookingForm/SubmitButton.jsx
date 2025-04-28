@@ -11,7 +11,7 @@ const SubmitButton = ({ loading }) => {
     >
       {loading ? 'Processing...' : 'Confirm Booking'}
     </button>
-  );
+  ); 
 };
 
 export default SubmitButton;

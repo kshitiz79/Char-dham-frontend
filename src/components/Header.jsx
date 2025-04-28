@@ -7,7 +7,7 @@ const Header = () => {
 
   return (
     <header className="bg-white text-black shadow-lg sticky top-0 z-50">
-      <nav className="container mx-auto px-6 py-4">
+      <nav className="container mx-auto px-6 py-1">
         <div className="flex items-center justify-between">
           {/* Logo Section */}
           <Link to="/" className="flex items-center ml-20 sm:ml-0">

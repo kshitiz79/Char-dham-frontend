@@ -24,9 +24,7 @@ const Footer = () => {
   <a href="mailto:info@jetaviation.co.in" className="flex items-center hover:underline">
     <SiGmail className="mr-2" aria-label="Email Icon" /> info@jetaviation.co.in
   </a>
-  <a href="mailto:booking@flyolaindia.com" className="flex items-center hover:underline">
-    <SiGmail className="mr-2" aria-label="Email Icon" /> booking@flyolaindia.com
-  </a>
+  
 </div>
 
 

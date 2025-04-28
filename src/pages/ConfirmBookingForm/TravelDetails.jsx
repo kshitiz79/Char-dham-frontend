@@ -3,7 +3,7 @@ import React from 'react';
 
 const TravelDetails = ({ travelDate, totalCost }) => {
   return (
-    <>
+    <> 
       <div>
         <label className="block text-sm font-semibold text-gray-700 m">
           Travel Date

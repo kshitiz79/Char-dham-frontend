@@ -16,6 +16,8 @@ import Login from './pages/Auth/Login'
 import ProtectedRoute from './pages/Auth/ProtectedRoute'
 import BoadingPass from './pages/BoadingPass'
 import GetTicket from './pages/GetTicket'
+import Invoice from './pages/Invoice'
+
 
 
 function App() {
@@ -24,6 +26,7 @@ function App() {
       <Layout>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/invoice" element={<Invoice />} />
           {/* <Route path="/char-dham" element={<CharDham />} /> */}
           {/* <Route path="/do-dham" element={<DooDham />} /> */}
           <Route path="/do-dham-oneday" element={<DooDhamOneDay />} />
