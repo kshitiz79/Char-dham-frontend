@@ -15,10 +15,10 @@ const BookingSuccess = () => {
 
   const itinerary = tripType === 'one-day'
     ? [
-        { label: '09:30 AM', text: 'Report at Sahastradhara Helipad, Dehradun', icon: '🕤' },
-        { label: '10:00 AM', text: 'Helicopter → Kedarnath → Temple Darshan', icon: '🚁' },
-        { label: '01:00 PM', text: 'Kedarnath → Badrinath → Temple Darshan → Mana Village', icon: '🏞️' },
-        { label: '04:30 PM', text: 'Return to Dehradun — Tour Concludes', icon: '🏁' },
+        { label: '06:30 AM', text: 'Reporting at Jolly Grant Airport, Dehradun', icon: '🛫' },
+        { label: '08:05 AM', text: 'Arrival at Kedarnath region (Sersi/Phata/Guptkashi)', icon: '🚁' },
+        { label: '11:20 AM', text: 'Arrival at Badrinath Helipad', icon: '🚁' },
+        { label: '02:25 PM', text: 'Arrival at Dehradun Helipad – Tour Concludes', icon: '🏁' }
       ]
     : [
         { label: 'Day 1', text: 'Arrival → Hotel Check-in → Evening Briefing', icon: '🏨' },
@@ -136,6 +136,12 @@ const BookingSuccess = () => {
                       <strong>Email:</strong> {p.email}
                     </p>
                     <p className="text-sm text-gray-500">
+                      <strong>Date of Birth:</strong> {p.date_of_birth || 'N/A'}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      <strong>Gender:</strong> {p.gender || 'N/A'}
+                    </p>
+                    <p className="text-sm text-gray-500">
                       <strong>ID Type:</strong>{' '}
                       {idOptions.find((opt) => opt.value === p.idType)?.label || 'N/A'}
                     </p>
@@ -146,9 +152,6 @@ const BookingSuccess = () => {
                     </p>
                     <p className="text-xs text-gray-500">
                       <strong>Weight:</strong> {p.weight} kg
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      <strong>Age:</strong> {p.age || 'N/A'}
                     </p>
                   </div>
                 </div>

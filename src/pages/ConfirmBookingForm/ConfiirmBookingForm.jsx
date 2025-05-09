@@ -8,7 +8,7 @@ import PassengerList from './PassengerList';
 import SubmitButton from './SubmitButton';
 import MessageDisplay from './MessageDisplay';
 
-// Utility function to format date to YYYY-MM-DD in IST
+
 const formatDateToYYYYMMDD = (dateInput) => {
   const offset = 5.5 * 60; // IST is UTC+05:30 (330 minutes)
   const utcDate = new Date(dateInput.getTime() + dateInput.getTimezoneOffset() * 60000);
@@ -23,7 +23,7 @@ const ConfirmBookingForm = () => {
   const passengers = state?.passengers || [];
   const travelDate = state?.travelDate || null;
   const tripType = state?.tripType || 'multi-day';
-  const totalCost = tripType === 'one-day' ? 1100000 : tripType === 'char-dham' ? 1800000 : 1500000;
+  const totalCost = tripType === 'one-day' ? 2 : tripType === 'char-dham' ? 1800000 : 1500000;
 
   const [formData, setFormData] = useState(
     passengers.map((p) => ({
@@ -74,95 +74,72 @@ const ConfirmBookingForm = () => {
     setLoading(true);
 
     try {
-      if (!travelDate) throw new Error('Travel date is required');
-      const formattedBookingDate = formatDateToYYYYMMDD(travelDate);
-      console.log('Formatted booking date:', formattedBookingDate);
+        if (!travelDate) throw new Error('Travel date is required');
+        const formattedBookingDate = formatDateToYYYYMMDD(travelDate);
 
-      // Prepare booking data to send to backend
-      const bookingData = {
-        bookingDate: formattedBookingDate,
-        tripType,
-        totalCost,
-        passengers: formData.map((p) => ({
-          name: p.name,
-          weight: p.weight,
-          phone: p.phone,
-          email: p.email,
-          age: p.age,
-          idType: p.idType,
-        })), // Exclude idDocument for now, handle files separately
-      };
+        const bookingData = {
+            bookingDate: formattedBookingDate,
+            tripType,
+            totalCost,
+            passengers: formData.map((p) => ({
+                name: p.name,
+                weight: p.weight,
+                phone: p.phone,
+                email: p.email,
+                age: p.age,
+                idType: p.idType,
+            })),
+        };
 
-      // Create FormData for file uploads
-      const formDataToSend = new FormData();
-      formDataToSend.append('bookingData', JSON.stringify(bookingData));
-      formData.forEach((passenger, index) => {
-        if (passenger.idDocument) {
-          formDataToSend.append(`passengers[${index}][idDocument]`, passenger.idDocument);
+        // Use ngrok URLs for local testing
+        const baseUrl = import.meta.env.VITE_API_URL || 'https://abcd1234.ngrok.io'; // Backend ngrok URL
+        const redirectUrl = import.meta.env.VITE_PUBLIC_URL 
+            ? `${import.meta.env.VITE_PUBLIC_URL}/chardham/booking-success`
+            : 'https://efgh5678.ngrok.io/chardham/booking-success'; // Frontend ngrok URL
+
+        const orderRes = await fetch(`${baseUrl}/create-phonepe-transaction`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                amount: totalCost,
+                redirectUrl,
+                callbackUrl: `${baseUrl}/phonepe-callback`,
+                mobileNumber: formData[0]?.phone || '9999999999',
+                bookingData,
+            }),
+        });
+
+        if (!orderRes.ok) {
+            const contentType = orderRes.headers.get('content-type') || '';
+            let errMsg = `PhonePe transaction failed (HTTP ${orderRes.status})`;
+            if (contentType.includes('application/json')) {
+                const errData = await orderRes.json();
+                errMsg = errData.message || errMsg;
+            } else {
+                const errText = await orderRes.text();
+                errMsg = errText || errMsg;
+            }
+            throw new Error(errMsg);
         }
-      });
 
-      const orderRes = await fetch(`${apiUrl}/create-phonepe-transaction`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          amount: totalCost,
-          redirectUrl: `${window.location.origin}/chardham/booking-success`,
-          callbackUrl: `${apiUrl}/phonepe-callback`,
-          mobileNumber: formData[0]?.phone || '9999999999',
-          bookingData: bookingData,
-        }),
-      });
-      
+        const { paymentUrl, transactionId } = await orderRes.json();
+        if (!paymentUrl) throw new Error('No payment URL returned');
 
-      if (!orderRes.ok) {
-        const contentType = orderRes.headers.get('content-type') || '';
-        let errMsg = `PhonePe transaction failed (HTTP ${orderRes.status})`;
-        if (contentType.includes('application/json')) {
-          const errData = await orderRes.json();
-          errMsg = errData.message || errMsg;
-          if (orderRes.status === 401) {
-            errMsg = 'Payment failed: Invalid PhonePe credentials or configuration';
-          }
-        } else {
-          const errText = await orderRes.text();
-          errMsg = errText || errMsg;
-        }
-        throw new Error(errMsg);
-      }
+        localStorage.setItem('pendingBooking', JSON.stringify({
+            formData,
+            travelDate: formattedBookingDate,
+            tripType,
+            totalCost,
+            transactionId,
+        }));
 
-      const contentType = orderRes.headers.get('content-type') || '';
-      if (!contentType.includes('application/json')) {
-        const raw = await orderRes.text();
-        throw new Error('Expected JSON but got: ' + raw);
-      }
-
-      const { paymentUrl, transactionId } = await orderRes.json();
-      if (!paymentUrl) throw new Error('No payment URL returned');
-
-      // Store formData and transactionId temporarily (optional, if backend doesn't store it)
-      localStorage.setItem('pendingBooking', JSON.stringify({
-        formData,
-        travelDate: formattedBookingDate,
-        tripType,
-        totalCost,
-        transactionId,
-      }));
-
-      // Debug: Log FormData entries
-      for (let [key, value] of formDataToSend.entries()) {
-        console.log(`${key}: ${value}`);
-      }
-
-      // Redirect to PhonePe payment page
-      window.location.href = paymentUrl;
+        window.location.href = paymentUrl;
     } catch (err) {
-      console.error('PhonePe error:', err);
-      setMessage(`Payment error: ${err.message}`);
-      setLoading(false);
+        console.error('PhonePe error:', err);
+        setMessage(`Payment error: ${err.message}`);
+        setLoading(false);
     }
-  };
-
+};
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">

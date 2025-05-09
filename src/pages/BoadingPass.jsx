@@ -4,9 +4,8 @@ import { QRCodeCanvas as QRCode } from 'qrcode.react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
-const BoadingPass = () => {
+const BoardingPass = () => {
   const { state } = useLocation();
-  // Create refs for each boarding pass to capture them for PDF
   const boardingPassRefs = useRef([]);
 
   // Redirect to home if no state is provided
@@ -23,29 +22,31 @@ const BoadingPass = () => {
       })
     : 'N/A';
 
-    const itinerary = tripType === 'one-day'
+  // Standardize itinerary data structure
+  const itinerary = tripType === 'one-day'
     ? [
-        { label: '09:30 AM', text: 'Report at Sahastradhara Helipad, Dehradun', icon: '🕤' },
-        { label: '10:00 AM', text: 'Helicopter → Kedarnath → Temple Darshan', icon: '🚁' },
-        { label: '01:00 PM', text: 'Kedarnath → Badrinath → Temple Darshan → Mana Village', icon: '🏞️' },
-        { label: '04:30 PM', text: 'Return to Dehradun — Tour Concludes', icon: '🏁' },
+        { time: '06:30 AM', description: 'Reporting at Jolly Grant Airport, Dehradun', icon: '🛫' },
+        { time: '08:05 AM', description: 'Arrival at Kedarnath region (Sersi/Phata/Guptkashi)', icon: '🚁' },
+        { time: '11:20 AM', description: 'Arrival at Badrinath Helipad', icon: '🚁' },
+        { time: '02:25 PM', description: 'Arrival at Dehradun Helipad – Tour Concludes', icon: '🏁' },
       ]
     : [
-        { label: 'Day 1', text: 'Arrival → Hotel Check-in → Evening Briefing', icon: '🏨' },
-        { label: 'Day 2', text: 'Dehradun → Kedarnath (Helicopter) → Temple Darshan', icon: '🚁' },
-        { label: 'Day 3', text: 'Kedarnath → Badrinath (Helicopter) → Temple Darshan → Mana Village', icon: '🏞️' },
-        { label: 'Day 4', text: 'Badrinath → Dehradun (Helicopter) → Departure', icon: '✈️' },
+        { time: 'Day 1', description: 'Arrival → Hotel Check-in → Evening Briefing', icon: '🏨' },
+        { time: 'Day 2', description: 'Dehradun → Kedarnath (Helicopter) → Temple Darshan', icon: '🚁' },
+        { time: 'Day 3', description: 'Kedarnath → Badrinath (Helicopter) → Temple Darshan → Mana Village', icon: '🏞️' },
+        { time: 'Day 4', description: 'Badrinath → Dehradun (Helicopter) → Departure', icon: '✈️' },
       ];
-  // Extract departure and arrival times from itinerary
-  const departureTime = itinerary[0].label.includes('AM') || itinerary[0].label.includes('PM') ? itinerary[0].label : '09:00 AM';
-  const arrivalTime = itinerary[itinerary.length - 1].label.includes('AM') || itinerary[itinerary.length - 1].label.includes('PM') ? itinerary[itinerary.length - 1].label : '03:00 PM';
 
-  // Mock data for the boarding pass (adapted for helicopter tour context)
+  // Extract departure and arrival times from itinerary
+  const departureTime = itinerary[0].time.includes('AM') || itinerary[0].time.includes('PM') ? itinerary[0].time : '09:00 AM';
+  const arrivalTime = itinerary[itinerary.length - 1].time.includes('AM') || itinerary[itinerary.length - 1].time.includes('PM') ? itinerary[itinerary.length - 1].time : '03:00 PM';
+
+  // Mock data for the boarding pass
   const departureHelipad = 'SAH'; // Sahastradhara Helipad (Dehradun)
   const arrivalHelipad = 'KED'; // Kedarnath Helipad
   const departureCity = 'DEHRADUN';
   const arrivalCity = 'KEDARNATH';
-  const flightNumber = `H ${pnr || '0123'}`; // Using PNR as part of the flight number
+  const flightNumber = `H ${pnr || '0123'}`;
   const gate = 'H1'; // Helipad gate
   const terminal = '1H'; // Helipad terminal
 
@@ -55,22 +56,17 @@ const BoadingPass = () => {
     if (!boardingPassElement) return;
 
     try {
-      // Capture the boarding pass as a canvas
       const canvas = await html2canvas(boardingPassElement, {
-        scale: 2, // Increase resolution
-        useCORS: true, // Handle cross-origin images (if any)
+        scale: 2,
+        useCORS: true,
       });
 
-      // Create a new jsPDF instance
       const pdf = new jsPDF('p', 'mm', 'a4');
       const imgData = canvas.toDataURL('image/png');
       const imgWidth = 210; // A4 width in mm
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-      // Add the image to the PDF
       pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-
-      // Download the PDF
       pdf.save(`Boarding_Pass_${passengerName}_${pnr}.pdf`);
     } catch (error) {
       console.error('Error generating PDF:', error);
@@ -82,8 +78,8 @@ const BoadingPass = () => {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8 space-y-6">
       {formData.map((passenger, index) => {
         const passengerName = passenger.name.toUpperCase();
-        const seat = `${passenger.weight}KG`; // Using weight as a placeholder for seat
-        const qrData = `Name: ${passenger.name}, PNR: ${pnr}, Phone: ${passenger.phone}`; // Enhanced QR code data
+        const seat = `${passenger.weight}KG`;
+        const qrData = `Name: ${passenger.name}, PNR: ${pnr}, Phone: ${passenger.phone}, Date of Birth: ${passenger.date_of_birth}, Gender: ${passenger.gender}, Booking ID: ${bookings[index]?.booking_id || 'N/A'}`;
 
         return (
           <div key={index} className="w-full max-w-4xl">
@@ -99,7 +95,7 @@ const BoadingPass = () => {
 
             {/* Boarding Pass */}
             <div
-              ref={(el) => (boardingPassRefs.current[index] = el)} // Assign ref to capture this element
+              ref={(el) => (boardingPassRefs.current[index] = el)}
               className="bg-blue-600 rounded-3xl shadow-lg w-full flex flex-row items-stretch relative overflow-hidden border-4 border-blue-800"
             >
               {/* Left Section: Main Boarding Pass Content */}
@@ -108,7 +104,7 @@ const BoadingPass = () => {
                 <div className="flex justify-between items-center mb-4">
                   <div className="flex items-center">
                     <div className="w-8 h-8 bg-white rounded-full mr-2 flex items-center justify-center">
-                      <span className="text-blue-600 text-xl">✈️</span>
+                      <span className="text-blue-600 text-xl">🚁</span>
                     </div>
                     <h1 className="text-2xl font-bold uppercase">Boarding Pass</h1>
                   </div>
@@ -122,10 +118,12 @@ const BoadingPass = () => {
                 <div className="mb-4">
                   <p className="text-xl font-bold">{passengerName}</p>
                   <p className="text-sm uppercase">**{tripType === 'one-day' ? 'One-Day Tour' : 'Multi-Day Tour'}**</p>
+                  <p className="text-sm">Date of Birth: {passenger.date_of_birth || 'N/A'}</p>
+                  <p className="text-sm">Gender: {passenger.gender || 'N/A'}</p>
                   <p className="text-sm mt-2">Destination: {departureCity} to {arrivalCity}</p>
                 </div>
 
-                {/* From/To Section with Helicopter Graphic */}
+                {/* From/To Section */}
                 <div className="relative flex items-center justify-between mb-4">
                   <div>
                     <p className="text-sm font-semibold uppercase">From</p>
@@ -137,8 +135,19 @@ const BoadingPass = () => {
                   <div className="absolute left-1/4 right-1/4 top-1/2 transform -translate-y-1/2 flex items-center justify-center">
                     <div className="w-full h-px border-t-2 border-dashed border-white"></div>
                     <div className="absolute bg-blue-600 p-2 rounded-full">
-                      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 12h14M12 5l7 7-7 7"></path>
+                      <svg
+                        className="w-6 h-6 text-white"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M5 12h14M12 5l7 7-7 7"
+                        ></path>
                       </svg>
                     </div>
                   </div>
@@ -156,6 +165,7 @@ const BoadingPass = () => {
                   <div>
                     <p>Flight: <span className="font-semibold">{flightNumber}</span></p>
                     <p>Seat: <span className="font-semibold">{seat}</span></p>
+                    <p>Booking ID: <span className="font-semibold">{bookings[index]?.booking_id || 'N/A'}</span></p>
                   </div>
                   <div className="text-right">
                     <p>Gate: <span className="font-semibold">{gate}</span></p>
@@ -187,11 +197,4 @@ const BoadingPass = () => {
   );
 };
 
-export default BoadingPass;
-
-
-
-
-
-
-  // Itinerary from Summery
+export default BoardingPass;

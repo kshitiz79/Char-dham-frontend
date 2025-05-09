@@ -3,14 +3,16 @@ import React from 'react';
 export const Summery = ({ travelDate, tripType, passengers = [] }) => {
   const itinerary = tripType === 'one-day'
   ? [
-      { label: '05:00 AM', text: 'Report at Dehradun Airport with same-day return yatri.', icon: '🛫' },
-      { label: '06:00 AM', text: 'Helicopter departs for Sersi/Phata/Guptkashi.', icon: '🚁' },
-      { label: '06:35 AM', text: 'Arrival at Sersi/Phata/Guptkashi Helipad.', icon: '📍' },
-      { label: '—', text: 'Shuttle to Kedarnath Temple for VIP Darshan (~2 hrs).', icon: '🛕' },
-      { label: '09:20 AM', text: 'Helicopter departs from Sersi/Phata/Guptkashi to Badrinath.', icon: '🚁' },
-      { label: '09:50 AM', text: 'Arrival at Badrinath. Darshan.', icon: '🙏' },
-      { label: '12:00 PM', text: 'Helicopter departs from Badrinath to Dehradun.', icon: '🚁' },
-      { label: '12:55 PM', text: 'Arrival at Dehradun Airport — Tour Concludes.', icon: '🏁' }
+
+      { label: '06:30 AM', text: 'Report at Dehradun Airport for your Char Dham Helicopter journey.', icon: '🛫' },
+      { label: '07:30 AM - 08:05 AM', text: 'Helicopter departs for Sersi/Phata/Guptkashi. Arrival at Sersi/Phata/Guptkashi or direct landing at Kedarnath.', icon: '🚁' },
+      { label: '08:05 AM - 10:50 AM', text: 'Shuttle to Kedarnath Temple for VIP Darshan (~2 hrs).', icon: '🛕' },
+      { label: '10:50 AM - 11:20 AM', text: 'Helicopter departs from Sersi/Phata/Guptkashi to Badrinath. Arrival at Badrinath Helipad.', icon: '🚁' },
+      { label: '11:20 AM - 01:00 PM', text: 'Transfer to Badrinath Temple for VIP Darshan (~1.5 hrs).', icon: '🙏' },
+      { label: '01:00 PM - 02:25 PM', text: 'Helicopter departs from Badrinath to Dehradun. Arrival at Dehradun Helipad.', icon: '🚁' },
+      { label: '02:25 PM', text: 'Drop-off at Dehradun Airport / Railway Station. Tour concludes.', icon: '🏁' }
+    
+    
     ]
   : [
       { label: 'Day 1', text: 'Report at Dehradun Airport. Helicopter departs for Badrinath at 06:40 AM.', icon: '🛫' },

@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 const PassengerForm = ({ passenger, index, onInputChange, onFileChange }) => {
@@ -6,8 +5,15 @@ const PassengerForm = ({ passenger, index, onInputChange, onFileChange }) => {
     { value: '', label: 'Select ID Type' },
     { value: 'aadhar', label: 'Aadhar Card' },
     { value: 'pan', label: 'PAN Card' },
-    { value: 'passport', label: 'Passport' },
+    { value: 'passportawc', label: 'Passport' },
     { value: 'voterid', label: 'Voter ID' },
+  ];
+
+  const genderOptions = [
+    { value: '', label: 'Select Gender' },
+    { value: 'male', label: 'Male' },
+    { value: 'female', label: 'Female' },
+    { value: 'trans', label: 'Trans' },
   ];
 
   return (
@@ -62,35 +68,49 @@ const PassengerForm = ({ passenger, index, onInputChange, onFileChange }) => {
             />
           </div>
         </div>
-        {/* Age & ID Type */}
+        {/* Date of Birth & Gender */}
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-medium text-gray-600">Age</label>
+            <label className="block text-xs font-medium text-gray-600">Date of Birth</label>
             <input
-              type="number"
-              placeholder="30"
-              min="1"
-              value={passenger.age}
-              onChange={(e) => onInputChange(index, 'age', e.target.value)}
+              type="date"
+              value={passenger.date_of_birth}
+              onChange={(e) => onInputChange(index, 'date_of_birth', e.target.value)}
               required
               className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-600">ID Type</label>
+            <label className="block text-xs font-medium text-gray-600">Gender</label>
             <select
-              value={passenger.idType}
-              onChange={(e) => onInputChange(index, 'idType', e.target.value)}
+              value={passenger.gender}
+              onChange={(e) => onInputChange(index, 'gender', e.target.value)}
               required
               className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
             >
-              {idOptions.map((opt) => (
+              {genderOptions.map((opt) => (
                 <option key={opt.value} value={opt.value}>
                   {opt.label}
                 </option>
               ))}
             </select>
           </div>
+        </div>
+        {/* ID Type */}
+        <div>
+          <label className="block text-xs font-medium text-gray-600">ID Type</label>
+          <select
+            value={passenger.idType}
+            onChange={(e) => onInputChange(index, 'idType', e.target.value)}
+            required
+            className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
+          >
+            {idOptions.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
         </div>
         {/* File Upload */}
         {passenger.idType && (
