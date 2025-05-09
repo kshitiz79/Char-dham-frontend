@@ -14,7 +14,6 @@ const Header = () => {
             <img src={logo} alt="logo" className="sm:w-20 w-14 h-auto rounded-lg" />
           </Link>
 
-          {/* Hamburger Menu Button */}
           <button
             className="lg:hidden focus:outline-none"
             onClick={() => setIsMenuOpen(!isMenuOpen)}

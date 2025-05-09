@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
+import { format, isSameDay, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addMonths, subMonths, parseISO } from 'date-fns';
 
 const Calendar = ({ onDateSelect, tripType = 'one-day' }) => {
-  const [currentDate, setCurrentDate] = useState(new Date());
+  const [currentDate, setCurrentDate] = useState(new Date()); // Current date
   const [selectedDate, setSelectedDate] = useState(null);
   const [view, setView] = useState('month');
   const [loading, setLoading] = useState(false);
@@ -10,8 +11,15 @@ const Calendar = ({ onDateSelect, tripType = 'one-day' }) => {
 
   const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
+  // Convert date to IST manually
+  const toIST = (date) => {
+    const offset = 5.5 * 60; // IST is UTC+05:30 (330 minutes)
+    const utcDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
+    return new Date(utcDate.getTime() + offset * 60000);
+  };
+
   useEffect(() => {
-    const month = currentDate.toISOString().slice(0, 7);
+    const month = format(currentDate, 'yyyy-MM'); // e.g., '2025-05'
     setLoading(true);
     setError(null);
     fetch(`${apiUrl}/bookings?month=${month}&tripType=${tripType}`)
@@ -44,43 +52,42 @@ const Calendar = ({ onDateSelect, tripType = 'one-day' }) => {
   });
 
   const getWeekDates = () => {
-    const start = new Date(currentDate);
-    start.setDate(start.getDate() - start.getDay());
+    const start = startOfWeek(currentDate, { weekStartsOn: 0 });
     return Array.from({ length: 7 }, (_, i) => {
       const d = new Date(start);
       d.setDate(start.getDate() + i);
-      return d;
+      return toIST(d);
     });
   };
 
   const getAvailabilityColor = (date) => {
-    const iso = date.toISOString().split('T')[0];
+    const iso = format(date, 'yyyy-MM-dd');
     const seats = availability[iso];
-    if (seats === 0) return 'bg-red-100'; // Fully booked
-    if (typeof seats === 'number' && seats > 0) return 'bg-green-400'; // Available
-    return 'bg-gray-200 opacity-50'; // Unavailable or no data
+    if (seats === 0) return 'bg-red-100';
+    if (typeof seats === 'number' && seats > 0) return 'bg-green-400';
+    return 'bg-gray-200 opacity-50';
   };
 
   const isUnavailable = (date) => {
-    const iso = date.toISOString().split('T')[0];
+    const iso = format(date, 'yyyy-MM-dd');
     const seats = availability[iso];
     return seats == null || seats <= 0;
   };
 
   const handleDateClick = (date) => {
     if (!isUnavailable(date)) {
-      setSelectedDate(date);
-      onDateSelect(date);
+      const istDate = toIST(date);
+      setSelectedDate(istDate);
+      onDateSelect(istDate);
     }
   };
 
-  const isSelected = (date) => selectedDate?.toDateString() === date.toDateString();
+  const isSelected = (date) => selectedDate && isSameDay(date, selectedDate);
   const isCurrentMonth = (date) => date.getMonth() === currentDate.getMonth();
 
   const navigateMonth = (dir) => {
-    const next = new Date(currentDate);
-    next.setMonth(next.getMonth() + dir);
-    setCurrentDate(next);
+    const next = dir > 0 ? addMonths(currentDate, 1) : subMonths(currentDate, 1);
+    setCurrentDate(toIST(next));
   };
 
   const monthNames = [
@@ -89,20 +96,14 @@ const Calendar = ({ onDateSelect, tripType = 'one-day' }) => {
   ];
 
   const getMonthData = () => {
-    const year = currentDate.getFullYear();
-    const month = currentDate.getMonth();
-    const first = new Date(year, month, 1);
-    const last = new Date(year, month + 1, 0);
-    const start = new Date(first);
-    start.setDate(first.getDate() - first.getDay());
-    const end = new Date(last);
-    end.setDate(last.getDate() + (6 - last.getDay()));
+    const start = startOfWeek(startOfMonth(currentDate), { weekStartsOn: 0 });
+    const end = endOfWeek(endOfMonth(currentDate), { weekStartsOn: 0 });
     const weeks = [];
     let day = new Date(start);
     while (day <= end) {
       const week = [];
       for (let i = 0; i < 7; i++) {
-        week.push(new Date(day));
+        week.push(toIST(day));
         day.setDate(day.getDate() + 1);
       }
       weeks.push(week);
@@ -139,7 +140,7 @@ const Calendar = ({ onDateSelect, tripType = 'one-day' }) => {
                 ${isSelected(date) ? 'ring-2 ring-indigo-500 ring-offset-2 bg-indigo-50' : ''}
               `}
               onClick={() => handleDateClick(date)}
-              aria-label={`Date: ${date.toDateString()}, ${unavailable ? 'Unavailable' : 'Available'}`}
+              aria-label={`Date: ${format(date, 'EEEE, MMMM d, yyyy')}, ${unavailable ? 'Unavailable' : 'Available'}`}
             >
               <span className={`
                 w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center rounded-full mx-auto text-xs sm:text-sm font-semibold
@@ -161,7 +162,7 @@ const Calendar = ({ onDateSelect, tripType = 'one-day' }) => {
         <div className="px-1 py-2 text-xs font-semibold text-gray-700 sm:p-4 sm:text-sm">Time</div>
         {getWeekDates().map((date, i) => (
           <div key={i} className="px-1 py-2 text-center text-xs text-gray-900 font-semibold sm:p-4 sm:text-sm">
-            <span className="hidden sm:inline">{date.toDateString().slice(0, 3)} </span>
+            <span className="hidden sm:inline">{format(date, 'EEE')} </span>
             {date.getDate()}
           </div>
         ))}
@@ -182,7 +183,7 @@ const Calendar = ({ onDateSelect, tripType = 'one-day' }) => {
                     ${isSelected(date) ? 'ring-2 ring-indigo-500 ring-offset-2 bg-indigo-50' : ''}
                   `}
                   onClick={() => handleDateClick(date)}
-                  aria-label={`Date: ${date.toDateString()} at ${time}, ${unavailable ? 'Unavailable' : 'Available'}`}
+                  aria-label={`Date: ${format(date, 'EEEE, MMMM d, yyyy')} at ${time}, ${unavailable ? 'Unavailable' : 'Available'}`}
                 />
               );
             })}
@@ -207,7 +208,7 @@ const Calendar = ({ onDateSelect, tripType = 'one-day' }) => {
           <div className="flex gap-2 sm:gap-4">
             <button
               className="px-3 py-1 text-xs bg-gradient-to-r from-indigo-600 to-indigo-700 text-white rounded-lg font-semibold hover:from-indigo-700 hover:to-indigo-800 transition-all duration-300 shadow-md hover:shadow-lg sm:px-5 sm:py-2 sm:text-sm"
-              onClick={() => setCurrentDate(new Date())}
+              onClick={() => setCurrentDate(toIST(new Date()))}
             >
               Today
             </button>
@@ -226,12 +227,12 @@ const Calendar = ({ onDateSelect, tripType = 'one-day' }) => {
               aria-label="Next Month"
             >
               <svg className="w-5 h-5 text-gray-700 sm:w-7 sm:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l-7 7 7 7" />
               </svg>
             </button>
           </div>
           <h2 className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-teal-500 bg-clip-text text-transparent sm:text-2xl md:text-3xl">
-            {`${monthNames[currentDate.getMonth()]} ${currentDate.getFullYear()}`}
+            {format(currentDate, 'MMMM yyyy')}
           </h2>
           <div className="flex gap-2 sm:gap-4">
             <button

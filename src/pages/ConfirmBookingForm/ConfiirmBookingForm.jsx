@@ -1,11 +1,20 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { format } from 'date-fns';
 import { Summery } from './Summery';
 import Header from './Header';
 import TravelDetails from './TravelDetails';
 import PassengerList from './PassengerList';
 import SubmitButton from './SubmitButton';
 import MessageDisplay from './MessageDisplay';
+
+// Utility function to format date to YYYY-MM-DD in IST
+const formatDateToYYYYMMDD = (dateInput) => {
+  const offset = 5.5 * 60; // IST is UTC+05:30 (330 minutes)
+  const utcDate = new Date(dateInput.getTime() + dateInput.getTimezoneOffset() * 60000);
+  const istDate = new Date(utcDate.getTime() + offset * 60000);
+  return format(istDate, 'yyyy-MM-dd');
+};
 
 const ConfirmBookingForm = () => {
   const { state } = useLocation();
@@ -14,7 +23,7 @@ const ConfirmBookingForm = () => {
   const passengers = state?.passengers || [];
   const travelDate = state?.travelDate || null;
   const tripType = state?.tripType || 'multi-day';
-  const totalCost = tripType === 'one-day' ? 1100000 : tripType === 'char-dham' ? 1800000 : 1500000;
+  const totalCost = tripType === 'one-day' ? 1 : tripType === 'char-dham' ? 1800000 : 1500000;
 
   const [formData, setFormData] = useState(
     passengers.map((p) => ({
@@ -59,22 +68,52 @@ const ConfirmBookingForm = () => {
   };
 
   const handlePhonePePayment = async (e) => {
-    e?.preventDefault();
+    e.preventDefault();
     setMessage('');
     if (!validateForm()) return;
     setLoading(true);
 
     try {
+      if (!travelDate) throw new Error('Travel date is required');
+      const formattedBookingDate = formatDateToYYYYMMDD(travelDate);
+      console.log('Formatted booking date:', formattedBookingDate);
+
+      // Prepare booking data to send to backend
+      const bookingData = {
+        bookingDate: formattedBookingDate,
+        tripType,
+        totalCost,
+        passengers: formData.map((p) => ({
+          name: p.name,
+          weight: p.weight,
+          phone: p.phone,
+          email: p.email,
+          age: p.age,
+          idType: p.idType,
+        })), // Exclude idDocument for now, handle files separately
+      };
+
+      // Create FormData for file uploads
+      const formDataToSend = new FormData();
+      formDataToSend.append('bookingData', JSON.stringify(bookingData));
+      formData.forEach((passenger, index) => {
+        if (passenger.idDocument) {
+          formDataToSend.append(`passengers[${index}][idDocument]`, passenger.idDocument);
+        }
+      });
+
       const orderRes = await fetch(`${apiUrl}/create-phonepe-transaction`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          amount: totalCost, // Send totalCost directly (in rupees)
-          redirectUrl: `${window.location.origin}/booking-success`,
+          amount: totalCost,
+          redirectUrl: `${window.location.origin}/chardham/booking-success`,
           callbackUrl: `${apiUrl}/phonepe-callback`,
-          mobileNumber: formData[0]?.phone || '9999999999'
+          mobileNumber: formData[0]?.phone || '9999999999',
+          bookingData: bookingData,
         }),
       });
+      
 
       if (!orderRes.ok) {
         const contentType = orderRes.headers.get('content-type') || '';
@@ -101,10 +140,21 @@ const ConfirmBookingForm = () => {
       const { paymentUrl, transactionId } = await orderRes.json();
       if (!paymentUrl) throw new Error('No payment URL returned');
 
-      navigate('/booking-success', {
-        state: { formData, travelDate, tripType, totalCost, transactionId },
-      });
+      // Store formData and transactionId temporarily (optional, if backend doesn't store it)
+      localStorage.setItem('pendingBooking', JSON.stringify({
+        formData,
+        travelDate: formattedBookingDate,
+        tripType,
+        totalCost,
+        transactionId,
+      }));
 
+      // Debug: Log FormData entries
+      for (let [key, value] of formDataToSend.entries()) {
+        console.log(`${key}: ${value}`);
+      }
+
+      // Redirect to PhonePe payment page
       window.location.href = paymentUrl;
     } catch (err) {
       console.error('PhonePe error:', err);
@@ -122,7 +172,7 @@ const ConfirmBookingForm = () => {
             <Summery travelDate={travelDate} tripType={tripType} passengers={passengers} />
           </div>
           <div className="md:col-span-2 bg-blue-50 rounded-xl shadow-lg p-6">
-            <form onSubmit={handlePhonePePayment} className="space-y-7">
+            <form onSubmit={handlePhonePePayment} className="space-y-7" encType="multipart/form-data">
               <TravelDetails travelDate={travelDate} totalCost={totalCost} />
               <PassengerList
                 formData={formData}

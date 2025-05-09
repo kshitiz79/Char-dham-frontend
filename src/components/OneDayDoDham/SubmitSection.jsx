@@ -1,10 +1,18 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { format, isValid } from 'date-fns';
 
 const SubmitSection = ({ selectedDate, onDateChange, tripType }) => {
   const [passengers, setPassengers] = useState(1);
   const [passengerData, setPassengerData] = useState([{ name: '', weight: 0 }]);
   const navigate = useNavigate();
+
+  // Convert date to IST manually
+  const toIST = (date) => {
+    const offset = 5.5 * 60; // IST is UTC+05:30 (330 minutes)
+    const utcDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
+    return new Date(utcDate.getTime() + offset * 60000);
+  };
 
   const handlePassengerChange = (e) => {
     const num = Number(e.target.value);
@@ -33,14 +41,20 @@ const SubmitSection = ({ selectedDate, onDateChange, tripType }) => {
   const isFormValid =
     passengerData.every((p) => p.name.trim() !== '' && p.weight > 0) &&
     selectedDate !== null &&
+    isValid(selectedDate) &&
     !isWeightExceeded;
 
   const handleSubmit = () => {
     if (!isFormValid) return;
+    const istDate = toIST(selectedDate);
     navigate('/confirm-booking', {
-      state: { passengers: passengerData, travelDate: selectedDate, tripType }
+      state: { passengers: passengerData, travelDate: istDate, tripType }
     });
   };
+
+  const formattedDate = selectedDate && isValid(selectedDate)
+    ? format(toIST(selectedDate), 'yyyy-MM-dd')
+    : '';
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -57,14 +71,16 @@ const SubmitSection = ({ selectedDate, onDateChange, tripType }) => {
             </label>
             <input
               type="date"
-              value={selectedDate ? selectedDate.toISOString().split('T')[0] : ''}
+              value={formattedDate}
               disabled
               className="w-full p-2 md:p-3 border rounded-lg bg-gray-100 text-gray-600 cursor-not-allowed text-sm md:text-base"
-              min={new Date().toISOString().split('T')[0]}
+              min={format(new Date(), 'yyyy-MM-dd')}
             />
             {selectedDate && (
               <p className="mt-2 text-gray-600 text-xs md:text-sm">
-                Selected Date: <span className="font-medium">{selectedDate.toLocaleDateString()}</span>
+                Selected Date: <span className="font-medium">
+                  {format(toIST(selectedDate), 'MMMM d, yyyy')}
+                </span>
               </p>
             )}
           </div>
