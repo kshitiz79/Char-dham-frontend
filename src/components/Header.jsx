@@ -36,12 +36,14 @@ const Header = () => {
 
           {/* Desktop Navigation Links */}
           <div className="hidden lg:flex items-center space-x-6">
-            <Link
-              to="/"
-              className="px-4 py-2 rounded-full text-blue border border-blue-600 font-semibold hover:bg-blue-700 hover:text-white transition-all duration-300 shadow-md"
-            >
-              Downloads
-            </Link>
+          <a
+  href="/DoDhamSameDayReturn.pdf"
+  download
+  className="px-4 py-2 rounded-full text-blue border border-blue-600 font-semibold hover:bg-blue-700 hover:text-white transition-all duration-300 shadow-md"
+>
+  Downloads
+</a>
+
             <Link
               to="/char-dham"
               className="px-4 py-2 rounded-full text-blue border border-blue-600 font-semibold hover:bg-blue-700 hover:text-white transition-all duration-300 shadow-md"
