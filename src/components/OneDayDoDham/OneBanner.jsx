@@ -3,11 +3,12 @@ import React from 'react';
 
 const OneBanner = () => {
   const itinerary = [
-    { day: "05:00 AM", description: "Report at Dehradun Airport " },
-    { day: "06:35 AM", description: "Arrival at Sersi/Phata/Guptkashi Helipad " },
-    { day: "09:50 AM", description: "Arrival at Badrinath with same-day package yatris" },
-    { day: "12:55 PM", description: " Drop-off at Dehradun Airport" },
+    { day: "06:30 AM", description: "Reporting at Jolly Grant Airport, Dehradun" },
+    { day: "08:05 AM", description: "Arrival at Kedarnath region (Sersi/Phata/Guptkashi)" },
+    { day: "11:20 AM", description: "Arrival at Badrinath Helipad" },
+    { day: "02:25 PM", description: "Arrival at Dehradun Helipad – Tour Concludes" }
   ];
+  
 
   return (
     <div className="bg-gradient-to-r from-orange-500 via-orange-600 to-orange-500 text-white py-24 px-4 relative overflow-hidden">
