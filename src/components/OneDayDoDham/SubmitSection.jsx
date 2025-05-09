@@ -148,7 +148,7 @@ const SubmitSection = ({ selectedDate, onDateChange, tripType }) => {
               <ul className="space-y-2 md:space-y-3 text-gray-600 text-xs md:text-sm">
                 <li className="flex items-start">
                   <span className="text-red-600 text-lg animate-pulse mr-2">⚠️</span>
-                  <p>Luggage Allowance: 5 kg per passenger (no large suitcases).</p>
+                  <p>Luggage Allowance: 2 kg per passenger (no large suitcases).</p>
                 </li>
                 <li className="flex items-start">
                   <span className="text-red-600 text-lg animate-pulse mr-2">⚠️</span>
