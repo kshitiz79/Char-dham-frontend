@@ -213,21 +213,21 @@ const Calendar = ({ onDateSelect, tripType = 'one-day' }) => {
               Today
             </button>
             <button
-              className="p-2 hover:bg-gray-200 rounded-full transition-all duration-300 hover:shadow-md sm:p-3 hover:shadow-lg"
+              className="p-3 hover:bg-gray-200 rounded-full transition-all duration-300 hover:shadow-lg"
               onClick={() => navigateMonth(-1)}
               aria-label="Previous Month"
             >
-              <svg className="w-5 h-5 text-gray-700 sm:w-7 sm:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-7 h-7 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
               </svg>
             </button>
             <button
-              className="p-2 hover:bg-gray-200 rounded-full transition-all duration-300 hover:shadow-md sm:p-3 hover:shadow-lg"
+              className="p-3 hover:bg-gray-200 rounded-full transition-all duration-300 hover:shadow-lg"
               onClick={() => navigateMonth(1)}
               aria-label="Next Month"
             >
-              <svg className="w-5 h-5 text-gray-700 sm:w-7 sm:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l-7 7 7 7" />
+              <svg className="w-7 h-7 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
               </svg>
             </button>
           </div>
