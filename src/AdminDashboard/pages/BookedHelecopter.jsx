@@ -82,6 +82,17 @@ const BookedHelicopter = () => {
     return ['jpg', 'jpeg', 'png'].includes(extension);
   };
 
+  // Format date_of_birth to a readable format (e.g., "DD-MM-YYYY")
+  const formatDate = (dateString) => {
+    if (!dateString) return "N/A";
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    }).split('/').join('-');
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-12 px-4 sm:px-6 lg:px-8">
       <div className="container mx-auto max-w-7xl">
@@ -129,8 +140,9 @@ const BookedHelicopter = () => {
               >
                 <option value="all">All Trips</option>
                 <option value="one-day">One-Day</option>
-                <option value="multi-day">Multi-Day</option>
+                <option value="two-day">Two-Day</option>
                 <option value="char-dham">Char Dham</option>
+                <option value="do-dham">Do Dham</option>
               </select>
             </div>
           </div>
@@ -180,10 +192,12 @@ const BookedHelicopter = () => {
                         <span className={`inline-flex px-3 py-1 rounded-full text-sm font-medium capitalize ${
                           booking.trip_type === "one-day"
                             ? "bg-green-100 text-green-800"
-                            : booking.trip_type === "multi-day"
+                            : booking.trip_type === "two-day"
                             ? "bg-blue-100 text-blue-800"
                             : booking.trip_type === "char-dham"
                             ? "bg-purple-100 text-purple-800"
+                            : booking.trip_type === "do-dham"
+                            ? "bg-yellow-100 text-yellow-800"
                             : "bg-gray-100 text-gray-800"
                         }`}>
                           {booking.trip_type}
@@ -212,8 +226,10 @@ const BookedHelicopter = () => {
                                     <span className="text-indigo-600">Email:</span> {passenger.email || "N/A"}
                                   </p>
                                   <p className="text-gray-600">
-                                    <span className="text-indigo-600">Age:</span> {passenger.age || "N/A"} | 
-                                    <span className="text-indigo-600"> Weight:</span> {passenger.weight || "N/A"} kg
+                                    <span className="text-indigo-600">Date of Birth:</span> {formatDate(passenger.date_of_birth)}
+                                  </p>
+                                  <p className="text-gray-600">
+                                    <span className="text-indigo-600">Weight:</span> {passenger.weight || "N/A"} kg
                                   </p>
                                   <p className="text-indigo-700 font-bold">
                                     Booking ID: {passenger.booking_id || "N/A"}
