@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import logo from './../../public/logo-04.png';
+import logo from './../../public/logo-04.svg';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
     <header className="bg-white text-black shadow-lg sticky top-0 z-50">
-      <nav className="container mx-auto px-6 py-1">
+      <nav className="container mx-auto px-6 sm:py-1 py-3">
         <div className="flex items-center justify-between">
           {/* Logo Section */}
-          <Link to="/" className="flex items-center ml-20 sm:ml-0">
-            <img src={logo} alt="logo" className="w-40 h-auto rounded-lg" />
+          <Link to="/" className="flex items-center sm:ml-0">
+            <img src={logo} alt="logo" className="sm:w-20 w-14 h-auto rounded-lg" />
           </Link>
 
           {/* Hamburger Menu Button */}
