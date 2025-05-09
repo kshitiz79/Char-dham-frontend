@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { format } from 'date-fns';
 
 const AllSlots = () => {
   const [tripType, setTripType] = useState('multi-day');
@@ -8,6 +9,12 @@ const AllSlots = () => {
   const [error, setError] = useState(null);
 
   const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+
+  const toIST = (date) => {
+    const offset = 5.5 * 60; // IST is UTC+05:30 (330 minutes)
+    const utcDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
+    return new Date(utcDate.getTime() + offset * 60000);
+  };
 
   const fetchBookings = async () => {
     setLoading(true);
@@ -39,19 +46,19 @@ const AllSlots = () => {
   const getMonthDates = () => {
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
-    const first = new Date(year, month, 1);
+    const first = toIST(new Date(year, month, 1));
     const start = new Date(first);
     start.setDate(start.getDate() - first.getDay());
     const dates = [];
     while (dates.length < 42) {
-      dates.push(new Date(start));
+      dates.push(toIST(new Date(start)));
       start.setDate(start.getDate() + 1);
     }
     return dates;
   };
 
   const formatCell = date => {
-    const iso = date.toISOString().split('T')[0];
+    const iso = format(toIST(date), 'yyyy-MM-dd');
     const booking = slots[iso];
     if (!booking) return 'bg-gray-50';
     return booking.seats > 0 
@@ -62,7 +69,7 @@ const AllSlots = () => {
   const navigateMonth = dir => {
     const next = new Date(currentDate);
     next.setMonth(next.getMonth() + dir);
-    setCurrentDate(next);
+    setCurrentDate(toIST(next));
   };
 
   const monthNames = [
@@ -86,7 +93,6 @@ const AllSlots = () => {
         throw new Error(result.message || 'Unknown error');
       }
 
-      // Optimistically update the UI
       setSlots(prev => {
         const newSlots = { ...prev };
         delete newSlots[bookingDate];
@@ -95,7 +101,6 @@ const AllSlots = () => {
     } catch (error) {
       console.error('Error deleting booking slot:', error);
       alert(`Could not delete booking slot: ${error.message}`);
-      // Refetch to ensure UI consistency
       await fetchBookings();
     }
   };
@@ -106,7 +111,6 @@ const AllSlots = () => {
         Available Trip Slots
       </h1>
 
-      {/* Trip Type Buttons */}
       <div className="flex justify-center mb-8 space-x-4">
         {['multi-day', 'one-day', 'char-dham'].map(type => (
           <button
@@ -122,14 +126,12 @@ const AllSlots = () => {
         ))}
       </div>
 
-      {/* Error State */}
       {error && (
         <div className="text-center py-4 text-red-600">
           {error}
         </div>
       )}
 
-      {/* Loading State */}
       {loading && (
         <div className="text-center py-4">
           <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
@@ -137,7 +139,6 @@ const AllSlots = () => {
         </div>
       )}
 
-      {/* Month Navigation */}
       <div className="flex justify-between items-center mb-6 bg-white rounded-lg shadow-md p-4">
         <button 
           onClick={() => navigateMonth(-1)}
@@ -156,22 +157,21 @@ const AllSlots = () => {
         </button>
       </div>
 
-      {/* Calendar Grid */}
       <div className="bg-white rounded-lg shadow-md overflow-hidden">
-      <div className="grid grid-cols-7 gap-px bg-gray-200">
-  {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-    <div 
-      key={day} 
-      className="p-3 text-center font-semibold text-gray-600 bg-gray-50"
-    >
-      {day}
-    </div>
-  ))}
-</div>
+        <div className="grid grid-cols-7 gap-px bg-gray-200">
+          {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+            <div 
+              key={day} 
+              className="p-3 text-center font-semibold text-gray-600 bg-gray-50"
+            >
+              {day}
+            </div>
+          ))}
+        </div>
 
         <div className="grid grid-cols-7 gap-px bg-gray-200">
           {getMonthDates().map((date, i) => {
-            const iso = date.toISOString().split('T')[0];
+            const iso = format(toIST(date), 'yyyy-MM-dd');
             return (
               <div
                 key={i}
@@ -196,7 +196,6 @@ const AllSlots = () => {
         </div>
       </div>
 
-      {/* Legend */}
       <div className="flex justify-center mt-6 space-x-6 text-sm">
         <div className="flex items-center">
           <div className="w-4 h-4 bg-green-100 border border-green-300 mr-2"></div>
