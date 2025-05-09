@@ -23,7 +23,7 @@ const ConfirmBookingForm = () => {
   const passengers = state?.passengers || [];
   const travelDate = state?.travelDate || null;
   const tripType = state?.tripType || 'multi-day';
-  const totalCost = tripType === 'one-day' ? 1 : tripType === 'char-dham' ? 1800000 : 1500000;
+  const totalCost = tripType === 'one-day' ? 1100000 : tripType === 'char-dham' ? 1800000 : 1500000;
 
   const [formData, setFormData] = useState(
     passengers.map((p) => ({
