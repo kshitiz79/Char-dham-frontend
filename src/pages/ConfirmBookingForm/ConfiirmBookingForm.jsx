@@ -32,6 +32,7 @@ const ConfirmBookingForm = () => {
       phone: '',
       email: '',
       date_of_birth: '',
+      gender: '',
       idType: '',
       idDocument: null,
     }))
@@ -96,6 +97,7 @@ const ConfirmBookingForm = () => {
           phone: p.phone,
           email: p.email,
           date_of_birth: p.date_of_birth,
+          gender: p.gender,
           idType: p.idType,
         })),
       };

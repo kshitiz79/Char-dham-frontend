@@ -149,7 +149,7 @@ const Description = () => {
             <h4 className="text-xl md:text-2xl font-semibold text-gray-800 mb-3 animate-fade-in">Flight & Luggage Policies</h4>
             <div className="grid grid-cols-1 gap-4 md:gap-6">
               {[
-                { text: "Luggage Allowance: <span class='font-bold text-orange-600'>5 kg</span> per passenger (no large suitcases allowed).", icon: "⚠️" },
+                { text: "Luggage Allowance: <span class='font-bold text-orange-600'>2 kg</span> per passenger (no large suitcases allowed).", icon: "⚠️" },
                 { text: "Weight Limit: Strictly enforced at <span class='font-bold text-orange-600'>375 kg</span>—exceeding may result in deboarding without refund.", icon: "⚠️" },
                 { text: "Fixed Flight Timings: Report as per ETDs; timings may change due to weather or operations.", icon: null },
                 { text: "Helicopter Weight Limitation: Pilots have final call on load management for safety.", icon: null },
