@@ -1,29 +1,27 @@
+// File: Summery.jsx
 import React from 'react';
 
 export const Summery = ({ travelDate, tripType, passengers = [] }) => {
   const itinerary = tripType === 'one-day'
-  ? [
+    ? [
+        { label: '06:30 AM', text: 'Report at Dehradun Airport for your Char Dham Helicopter journey.', icon: '🛫' },
+        { label: '07:30 AM - 08:05 AM', text: 'Helicopter departs for Sersi/Phata/Guptkashi. Arrival at Sersi/Phata/Guptkashi or direct landing at Kedarnath.', icon: '🚁' },
+        { label: '08:05 AM - 10:50 AM', text: 'Shuttle to Kedarnath Temple for VIP Darshan (~2 hrs).', icon: '🛕' },
+        { label: '10:50 AM - 11:20 AM', text: 'Helicopter departs from Sersi/Phata/Guptkashi to Badrinath. Arrival at Badrinath Helipad.', icon: '🚁' },
+        { label: '11:20 AM - 01:00 PM', text: 'Transfer to Badrinath Temple for VIP Darshan (~1.5 hrs).', icon: '🙏' },
+        { label: '01:00 PM - 02:25 PM', text: 'Helicopter departs from Badrinath to Dehradun. Arrival at Dehradun Helipad.', icon: '🚁' },
+        { label: '02:25 PM', text: 'Drop-off at Dehradun Airport / Railway Station. Tour concludes.', icon: '🏁' }
+      ]
+    : [
+        { label: 'Day 1', text: 'Report at Dehradun Airport. Helicopter departs for Badrinath at 06:40 AM.', icon: '🛫' },
+        { label: 'Day 2', text: 'Arrival at Badrinath (07:10 AM). Return helicopter departs for Dehradun at 07:15 AM.', icon: '🚁' },
+        { label: 'Day 3', text: 'Arrival back in Dehradun by 08:10 AM. Helicopter departs again to Sersi/Phata/Guptkashi at 08:40 AM.', icon: '🔁' },
+        { label: 'Day 4', text: 'Arrival at Badrinath (09:50 AM). Final return to Dehradun at 12:00 PM. Drop-off at Airport/Railway Station.', icon: '🏁' }
+      ];
 
-      { label: '06:30 AM', text: 'Report at Dehradun Airport for your Char Dham Helicopter journey.', icon: '🛫' },
-      { label: '07:30 AM - 08:05 AM', text: 'Helicopter departs for Sersi/Phata/Guptkashi. Arrival at Sersi/Phata/Guptkashi or direct landing at Kedarnath.', icon: '🚁' },
-      { label: '08:05 AM - 10:50 AM', text: 'Shuttle to Kedarnath Temple for VIP Darshan (~2 hrs).', icon: '🛕' },
-      { label: '10:50 AM - 11:20 AM', text: 'Helicopter departs from Sersi/Phata/Guptkashi to Badrinath. Arrival at Badrinath Helipad.', icon: '🚁' },
-      { label: '11:20 AM - 01:00 PM', text: 'Transfer to Badrinath Temple for VIP Darshan (~1.5 hrs).', icon: '🙏' },
-      { label: '01:00 PM - 02:25 PM', text: 'Helicopter departs from Badrinath to Dehradun. Arrival at Dehradun Helipad.', icon: '🚁' },
-      { label: '02:25 PM', text: 'Drop-off at Dehradun Airport / Railway Station. Tour concludes.', icon: '🏁' }
-    
-    
-    ]
-  : [
-      { label: 'Day 1', text: 'Report at Dehradun Airport. Helicopter departs for Badrinath at 06:40 AM.', icon: '🛫' },
-      { label: 'Day 2', text: 'Arrival at Badrinath (07:10 AM). Return helicopter departs for Dehradun at 07:15 AM.', icon: '🚁' },
-      { label: 'Day 3', text: 'Arrival back in Dehradun by 08:10 AM. Helicopter departs again to Sersi/Phata/Guptkashi at 08:40 AM.', icon: '🔁' },
-      { label: 'Day 4', text: 'Arrival at Badrinath (09:50 AM). Final return to Dehradun at 12:00 PM. Drop-off at Airport/Railway Station.', icon: '🏁' }
-    ];
-
-
-  // Define the price based on tripType
-  const totalCost = tripType === 'one-day' ? 1100000 : 1500000; // ₹11,00,000 for one-day, ₹15,00,000 for multi-day
+  const basePrice = 1350000; // ₹13,50,000 base price
+  const gstRate = 0.18;      // 18% GST
+  const totalCostWithGST = basePrice * (1 + gstRate);
 
   return (
     <section className="bg-white rounded-xl shadow-lg p-6 max-w-7xl mb-8 transform transition-all hover:shadow-xl">
@@ -71,11 +69,11 @@ export const Summery = ({ travelDate, tripType, passengers = [] }) => {
           </div>
         </div>
 
-        {/* Total Cost */}
+        {/* Total Cost including GST */}
         <div className="bg-gradient-to-r from-indigo-100 to-purple-100 p-4 rounded-lg mb-4">
-          <p className="text-sm text-indigo-700 font-medium">Total Cost</p>
+          <p className="text-sm text-indigo-700 font-medium">Total Cost (Including 18% GST)</p>
           <p className="text-2xl font-bold text-purple-900">
-            ₹{totalCost.toLocaleString('en-IN')}
+            ₹{totalCostWithGST.toLocaleString('en-IN')}
           </p>
         </div>
 
@@ -92,7 +90,7 @@ export const Summery = ({ travelDate, tripType, passengers = [] }) => {
                   <span className="w-8 h-8 flex items-center justify-center bg-indigo-500 text-white rounded-full mr-3">
                     {i + 1}
                   </span>
-                  <div >
+                  <div>
                     <p className="font-medium text-gray-800">{p.name}</p>
                     <p className="text-sm text-gray-600">{p.weight} kg</p>
                   </div>

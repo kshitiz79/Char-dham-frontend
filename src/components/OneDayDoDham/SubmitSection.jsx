@@ -149,9 +149,12 @@ const SubmitSection = ({ selectedDate, onDateChange, tripType }) => {
           >
             Proceed to Book
           </button>
-          <p className="text-xs md:text-sm text-gray-600 text-center">
-            Total Cost: ₹{(11_00_000).toLocaleString('en-IN')}
-          </p>
+       {/* ...other code */}
+<p className="text-xs md:text-sm text-gray-600 text-center">
+  Total Cost: ₹{(1350000).toLocaleString('en-IN')} + GST
+</p>
+{/* ...other code */}
+
         </div>
         {/* RIGHT SIDE: Booking Information */}
         <div className="md:w-2/3">

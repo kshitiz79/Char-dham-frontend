@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { format } from 'date-fns';
 import { Summery } from './Summery';
 import Header from './Header';
@@ -8,9 +8,8 @@ import PassengerList from './PassengerList';
 import SubmitButton from './SubmitButton';
 import MessageDisplay from './MessageDisplay';
 
-// Utility function to format date to YYYY-MM-DD in IST
 const formatDateToYYYYMMDD = (dateInput) => {
-  const offset = 5.5 * 60; // IST is UTC+05:30 (330 minutes)
+  const offset = 5.5 * 60; // IST offset in minutes
   const utcDate = new Date(dateInput.getTime() + dateInput.getTimezoneOffset() * 60000);
   const istDate = new Date(utcDate.getTime() + offset * 60000);
   return format(istDate, 'yyyy-MM-dd');
@@ -18,12 +17,18 @@ const formatDateToYYYYMMDD = (dateInput) => {
 
 const ConfirmBookingForm = () => {
   const { state } = useLocation();
-  const navigate = useNavigate();
 
   const passengers = state?.passengers || [];
   const travelDate = state?.travelDate || null;
   const tripType = state?.tripType || 'multi-day';
-  const totalCost = tripType === 'one-day' ? 1100000 : tripType === 'char-dham' ? 1800000 : 1500000;
+
+  const basePrice =
+    tripType === 'one-day' ? 1350000
+    : tripType === 'char-dham' ? 1800000
+    : 1500000;
+
+  const gstRate = 0.18;
+  const totalCost = Math.round(basePrice * (1 + gstRate));
 
   const [formData, setFormData] = useState(
     passengers.map((p) => ({
@@ -37,34 +42,33 @@ const ConfirmBookingForm = () => {
       idDocument: null,
     }))
   );
+
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Check for successful payment redirect
   useEffect(() => {
     const pendingBooking = localStorage.getItem('pendingBooking');
     if (pendingBooking && window.location.pathname.includes('/booking-success')) {
-      setMessage('Booking submitted successfully! Check your email or WhatsApp for confirmation.');
-      localStorage.removeItem('pendingBooking'); // Clear pending booking
+      setMessage(
+        'Booking submitted successfully! Check your email or WhatsApp for confirmation.'
+      );
+      localStorage.removeItem('pendingBooking');
     }
   }, []);
 
   const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+  const publicUrl = import.meta.env.VITE_PUBLIC_URL || 'http://localhost:5173';
 
   const handleInputChange = (index, field, value) => {
-    setFormData((prev) => {
-      const copy = [...prev];
-      copy[index] = { ...copy[index], [field]: value };
-      return copy;
-    });
+    setFormData((prev) =>
+      prev.map((item, i) => (i === index ? { ...item, [field]: value } : item))
+    );
   };
 
   const handleFileChange = (index, file) => {
-    setFormData((prev) => {
-      const copy = [...prev];
-      copy[index] = { ...copy[index], idDocument: file };
-      return copy;
-    });
+    setFormData((prev) =>
+      prev.map((item, i) => (i === index ? { ...item, idDocument: file } : item))
+    );
   };
 
   const validateForm = () => {
@@ -81,68 +85,56 @@ const ConfirmBookingForm = () => {
     e.preventDefault();
     setMessage('');
     if (!validateForm()) return;
+
     setLoading(true);
 
     try {
       if (!travelDate) throw new Error('Travel date is required');
-      const formattedBookingDate = formatDateToYYYYMMDD(travelDate);
+
+      const formattedDate = formatDateToYYYYMMDD(travelDate);
 
       const bookingData = {
-        bookingDate: formattedBookingDate,
+        bookingDate: formattedDate,
         tripType,
         totalCost,
-        passengers: formData.map((p) => ({
-          name: p.name,
-          weight: p.weight,
-          phone: p.phone,
-          email: p.email,
-          date_of_birth: p.date_of_birth,
-          gender: p.gender,
-          idType: p.idType,
+        passengers: formData.map(({ name, weight, phone, email, date_of_birth, gender, idType }) => ({
+          name,
+          weight,
+          phone,
+          email,
+          date_of_birth,
+          gender,
+          idType,
         })),
       };
 
-      // Use ngrok URLs for local testing
-      const baseUrl = import.meta.env.VITE_API_URL || 'https://abcd1234.ngrok.io'; // Backend ngrok URL
-      const redirectUrl = import.meta.env.VITE_PUBLIC_URL
-        ? `${import.meta.env.VITE_PUBLIC_URL}/chardham/booking-success`
-        : 'https://efgh5678.ngrok.io/chardham/booking-success'; // Frontend ngrok URL
-
-      const orderRes = await fetch(`${baseUrl}/create-phonepe-transaction`, {
+      const response = await fetch(`${apiUrl}/create-phonepe-transaction`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           amount: totalCost,
-          redirectUrl,
-          callbackUrl: `${baseUrl}/phonepe-callback`,
+          redirectUrl: `${publicUrl}/chardham/booking-success`,
+          callbackUrl: `${apiUrl}/phonepe-callback`,
           mobileNumber: formData[0]?.phone || '9999999999',
           bookingData,
         }),
       });
 
-      if (!orderRes.ok) {
-        const contentType = orderRes.headers.get('content-type') || '';
-        let errMsg = `PhonePe transaction failed (HTTP ${orderRes.status})`;
-        if (contentType.includes('application/json')) {
-          const errData = await orderRes.json();
-          errMsg = errData.message || errMsg;
-        } else {
-          const errText = await orderRes.text();
-          errMsg = errText || errMsg;
-        }
-        throw new Error(errMsg);
+      if (!response.ok) {
+        const isJson = response.headers.get('content-type')?.includes('application/json');
+        const errorData = isJson ? await response.json() : await response.text();
+        throw new Error(
+          typeof errorData === 'string' ? errorData : errorData.message || 'Payment error'
+        );
       }
 
-      const { paymentUrl, transactionId } = await orderRes.json();
-      if (!paymentUrl) throw new Error('No payment URL returned');
+      const { paymentUrl, transactionId } = await response.json();
+      if (!paymentUrl) throw new Error('No payment URL returned from backend');
 
-      localStorage.setItem('pendingBooking', JSON.stringify({
-        formData,
-        travelDate: formattedBookingDate,
-        tripType,
-        totalCost,
-        transactionId,
-      }));
+      localStorage.setItem(
+        'pendingBooking',
+        JSON.stringify({ formData, travelDate: formattedDate, tripType, totalCost, transactionId })
+      );
 
       window.location.href = paymentUrl;
     } catch (err) {
@@ -157,7 +149,7 @@ const ConfirmBookingForm = () => {
       <div className="max-w-7xl mx-auto">
         <Header />
         <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
-          <div className="md:col-span-3 h-auto">
+          <div className="md:col-span-3">
             <Summery travelDate={travelDate} tripType={tripType} passengers={passengers} />
           </div>
           <div className="md:col-span-2 bg-blue-50 rounded-xl shadow-lg p-6">

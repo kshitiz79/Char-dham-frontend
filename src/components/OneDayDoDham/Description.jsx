@@ -75,7 +75,7 @@ const Description = () => {
               { label: "Helicopter", value: "Augusta 109 Power (Twin Engine)" },
               { label: "Passenger Capacity", value: "Up to 5" },
               { label: "Weight Limit", value: "375 kg" },
-              { label: "Package Cost", value: "₹11,00,000 per charter" },
+              { label: "Package Cost", value: "₹13,50,000  + GST PER CHARTER" },
             ].map((item, idx) => (
               <div
                 key={idx}
@@ -271,9 +271,7 @@ const Description = () => {
             <p className="text-gray-600 text-base md:text-lg">
               This itinerary ensures a <span className="font-bold text-orange-600">seamless luxury pilgrimage</span> with <span className="font-bold text-orange-600">VIP access</span> and top-tier helicopter service, completed in a <span className="font-bold text-orange-600">single day</span>.
             </p>
-            <p className="text-gray-600 text-base md:text-lg mt-3 md:mt-4">
-              For bookings, contact <span className="font-bold text-orange-600">FlyOla India</span> at [website/contact details].
-            </p>
+           
             <p className="text-gray-600 text-base md:text-lg mt-1 md:mt-2 italic">
               We assure you a <span className="font-bold text-orange-600">safe and memorable</span> pilgrimage experience!
             </p>

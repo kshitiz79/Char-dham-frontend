@@ -43,7 +43,9 @@ const TravelCard = ({ days, nights, price, destinations, onClick, sameDay, extra
             </div>
           </div>
           <div className="text-right w-full md:w-auto">
-            <p className="text-2xl md:text-3xl font-bold text-white drop-shadow-md">₹{price}/-</p>
+            <p className="text-2xl md:text-3xl font-bold text-white drop-shadow-md">₹{price}  </p>
+            <p className="text-white text-xs md:text-sm font-extrabold tracking-wide opacity-80">+ GST</p>
+
             <p className="text-white text-xs md:text-sm font-medium tracking-wide opacity-80">ALL INCLUSIVE</p>
             <button
               className="mt-3 md:mt-4 px-4 md:px-6 py-1 md:py-2 bg-white text-orange-600 rounded-full hover:bg-orange-100 hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2 group w-full md:w-auto md:ml-10 shadow-md"
@@ -72,7 +74,7 @@ const Home = () => {
     // },
     { 
       days: 1,
-      price: "11,00,000",
+      price: "13,50,000",
       destinations: "Kedarnath & Badrinath Same Day Return",
       route: "/do-dham-oneday",
       sameDay: true,
