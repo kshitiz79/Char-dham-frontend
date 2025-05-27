@@ -17,6 +17,7 @@ import ProtectedRoute from './pages/Auth/ProtectedRoute'
 import BoadingPass from './pages/BoadingPass'
 import GetTicket from './pages/GetTicket'
 import Invoice from './pages/Invoice'
+import EkDham from './pages/EkDham'
 
 
 
@@ -27,9 +28,13 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/invoice" element={<Invoice />} />
-          {/* <Route path="/char-dham" element={<CharDham />} /> */}
+          <Route path="/char-dham" element={<CharDham />} />
           {/* <Route path="/do-dham" element={<DooDham />} /> */}
           <Route path="/do-dham-oneday" element={<DooDhamOneDay />} />
+          <Route path="/ek-dham" element={<EkDham />} />
+
+
+
           <Route path="/confirm-booking" element={<ConfiirmBookingForm />} />
           <Route path="/booking-success" element={<BookingSucess />} />
           <Route path="/boding-pass" element={<BoadingPass />} />

@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
 
-import Description from '../components/CharDham/Description';
+import React, { useState } from 'react';
+import Description from '../components/EkDham/Description';
 import Calendar from '../components/OneDayDoDham/Calander';
 import SubmitSection from '../components/OneDayDoDham/SubmitSection';
-import OneBanner from '../components/CharDham/OneBanner';
+import OneBanner from '../components/EkDham/OneBanner';
 
 const DooDhamOneDay = () => {
   const [selectedDate, setSelectedDate] = useState(null);
