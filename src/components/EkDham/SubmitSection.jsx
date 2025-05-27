@@ -151,7 +151,7 @@ const SubmitSection = ({ selectedDate, onDateChange, tripType }) => {
           </button>
        {/* ...other code */}
 <p className="text-xs md:text-sm text-gray-600 text-center">
-  Total Cost: ₹{(1350000).toLocaleString('en-IN')} + GST
+  Total Cost: ₹{(800000).toLocaleString('en-IN')} + GST
 </p>
 {/* ...other code */}
 
