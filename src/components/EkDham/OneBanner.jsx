@@ -19,7 +19,7 @@ const OneBanner = () => {
 
       <div className="container mx-auto relative z-10">
         <h1 className="text-3xl uppercase md:text-5xl font-extrabold mb-12 text-center tracking-tight drop-shadow-lg animate-fade-in-down">
-          Do Dham Helicopter Yatra (Same Day Return)
+          Ek Dham Helicopter Yatra 
         </h1>
         
         <div className="flex flex-wrap justify-center gap-6 perspective-1000">
