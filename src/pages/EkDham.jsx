@@ -14,13 +14,13 @@ const DooDhamOneDay = () => {
     <>
       <OneBanner />
       <Description />
-      {/* Calendar passes selected date and uses tripType "one-day" */}
-      <Calendar onDateSelect={setSelectedDate} tripType="one-day" />
-      {/* SubmitSection uses the same selected date and tripType */}
+
+      <Calendar onDateSelect={setSelectedDate} tripType="ek-dham" />
+
       <SubmitSection 
         selectedDate={selectedDate} 
         onDateChange={setSelectedDate} 
-        tripType="one-day" 
+        tripType="ek-dham" 
       />
     </>
   );

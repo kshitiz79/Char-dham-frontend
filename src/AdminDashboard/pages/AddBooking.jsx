@@ -4,42 +4,56 @@ const AddBooking = () => {
   const [bookingDate, setBookingDate] = useState('');
   const [seats, setSeats] = useState('');
   const [tripType, setTripType] = useState('one-day');
-
   const [message, setMessage] = useState('');
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-  
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-    console.log('API URL:', apiUrl); // Debug
-  
-    const bookingData = {
-      booking_date: bookingDate,
-      seats: parseInt(seats, 10),
-      tripType,
-    };
-  
-    try {
-      const response = await fetch(`${apiUrl}/bookings`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(bookingData),
-      });
-  
-      const result = await response.json();
-      if (response.ok) {
-        setMessage(`Booking created with ID: ${result.insertId}`);
-        setBookingDate('');
-        setSeats('');
-        setTripType('multi-day');
-      } else {
-        setMessage(result.error || 'Error creating booking');
-      }
-    } catch (error) {
-      console.error('Fetch error:', error);
-      setMessage('Error creating booking');
-    }
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+  console.log('API URL:', apiUrl);
+
+  // Validate inputs
+  if (!bookingDate) {
+    setMessage('Please select a booking date');
+    return;
+  }
+  if (!seats || isNaN(seats) || parseInt(seats, 10) <= 0) {
+    setMessage('Please enter a valid number of seats');
+    return;
+  }
+  if (!['one-day', 'multi-day', 'char-dham', 'ek-dham'].includes(tripType)) {
+    setMessage('Please select a valid trip type');
+    return;
+  }
+
+  const bookingData = {
+    booking_date: bookingDate,
+    seats: parseInt(seats, 10),
+    tripType,
   };
+  console.log('Sending booking data:', bookingData);
+
+  try {
+    const response = await fetch(`${apiUrl}/bookings`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(bookingData),
+    });
+
+    const result = await response.json();
+    if (response.ok) {
+      setMessage(`Booking created with ID: ${result.insertId}`);
+      setBookingDate('');
+      setSeats('');
+      setTripType('one-day');
+    } else {
+      setMessage(result.message || 'Error creating booking');
+    }
+  } catch (error) {
+    console.error('Fetch error:', error);
+    setMessage('Failed to connect to the server');
+  }
+};
 
   return (
     <div className="max-w-md mx-auto p-6 bg-white rounded-xl shadow-lg transform transition-all hover:shadow-2xl duration-300 mt-10">
@@ -78,15 +92,15 @@ const AddBooking = () => {
             Trip Type
           </label>
           <select
-  value={tripType}
-  onChange={(e) => setTripType(e.target.value)}
-  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-gray-50 text-gray-800"
->
-  <option value="one-day">One Day</option>
-  <option value="multi-day">Multi Day</option>
-  <option value="char-dham">Char Dham</option>
-</select>
-
+            value={tripType}
+            onChange={(e) => setTripType(e.target.value)}
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-gray-50 text-gray-800"
+          >
+            <option value="one-day">One Day</option>
+            <option value="multi-day">Multi Day</option>
+            <option value="char-dham">Char Dham</option>
+            <option value="ek-dham">Ek Dham</option>
+          </select>
         </div>
         <button
           type="submit"

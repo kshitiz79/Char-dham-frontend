@@ -112,7 +112,7 @@ const AllSlots = () => {
       </h1>
 
       <div className="flex justify-center mb-8 space-x-4">
-        {['multi-day', 'one-day', 'char-dham'].map(type => (
+        {['one-day', 'multi-day', 'char-dham', 'ek-dham'].map(type => (
           <button
             key={type}
             className={`px-6 py-3 rounded-lg font-medium transition-all duration-300 transform hover:scale-105
@@ -121,7 +121,10 @@ const AllSlots = () => {
                 : 'bg-white text-gray-600 border border-gray-300 hover:bg-gray-50'}`}
             onClick={() => setTripType(type)}
           >
-            {type === 'multi-day' ? 'Multi-Day Trips' : type === 'one-day' ? 'One-Day Trips' : 'Char Dham Trips'}
+            {type === 'one-day' ? 'One-Day Trips' : 
+             type === 'multi-day' ? 'Multi-Day Trips' : 
+             type === 'char-dham' ? 'Char Dham Trips' : 
+             'Ek Dham Trips'}
           </button>
         ))}
       </div>

@@ -22,10 +22,12 @@ const ConfirmBookingForm = () => {
   const travelDate = state?.travelDate || null;
   const tripType = state?.tripType || 'multi-day';
 
+  // Updated pricing logic
   const basePrice =
-    tripType === 'one-day' ? 1350000
-    : tripType === 'char-dham' ? 1800000
-    : 1500000;
+    tripType === 'one-day' ? 1350000 :
+    tripType === 'multi-day' ? 1500000 :
+    tripType === 'char-dham' ? 2000000 :
+    tripType === 'ek-dham' ? 800000 : 1500000; // Default to multi-day price if tripType is invalid
 
   const gstRate = 0.18;
   const totalCost = Math.round(basePrice * (1 + gstRate));
